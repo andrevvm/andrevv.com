@@ -144,7 +144,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
             ))}
           </div>
         </div>
-        <div className="basis-3/4 md:basis-1/2 flex flex-col gap-2 justify-center h-full text-white">
+        <div className="basis-2/3 md:basis-1/2 flex flex-col gap-2 justify-center h-full text-white">
           <div className="w-full flex-1 relative flex items-start justify-start">
             <h2 className="mix-blend-difference leading-none pt-4">
               Andrew McCarthy
