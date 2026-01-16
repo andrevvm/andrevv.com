@@ -3,6 +3,5 @@ import ProjectScroller from '@/lib/components/ProjectScroller'
 
 export default async function Home() {
   const allProjects = await getAllProjects(false)
-  console.log('allProjects', allProjects)
   return <ProjectScroller projects={allProjects} />
 }
