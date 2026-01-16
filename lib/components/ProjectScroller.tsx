@@ -79,7 +79,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
   const handleScroll = useCallback(() => {
     const container = scrollContainerRef.current
     if (!container) return
-    const scrollPer = (container.scrollLeft + 60) / container.scrollWidth
+    const scrollPer = (container.scrollLeft + 20) / container.scrollWidth
     const scrollPerNext =
       (container.scrollLeft + window.innerWidth + 10) / container.scrollWidth
 
@@ -137,7 +137,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
         <div className="flex-1 flex gap-1 overflow-hidden">
           <div
             ref={leftTransformRef}
-            className="flex gap-0 relative left-[25vw] translate-x-0"
+            className="flex gap-0 relative left-[16.665vw] md:left-[25vw] translate-x-0"
           >
             {projects.map((project: any, index: number) => (
               <ProjectThumbnail
@@ -207,10 +207,10 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
         ))}
       </div>
       <div
-        className="fixed bottom-4 left-0 px-4 leading-none z-10 w-full flex justify-between items-end pointer-events-none"
+        className="fixed bottom-4 left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline pointer-events-none"
         style={{ color: textColor }}
       >
-        <div className="text-xs whitespace-nowrap max-md:w-15">
+        <div className="text-xs whitespace-nowrap max-md:w-21">
           {scrollIndex + 1} / {projects.length}
         </div>
         <div className="flex w-full gap-4 items-end leading-none justify-center text-center md:justify-end md:text-right">
@@ -228,7 +228,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
             </span>
           </a>
         </div>
-        <div className="md:hidden max-md:w-15 flex items-end justify-end">
+        <div className="md:hidden max-md:w-21 flex items-end justify-end">
           <span className="text-xs group-hover:text-accent">[&hellip;]</span>
         </div>
       </div>
