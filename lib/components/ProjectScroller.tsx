@@ -94,11 +94,6 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
     setScrollIndex(Math.round(projects.length * scrollPer))
   }, [projects])
 
-  const handleWheel = useCallback((event: WheelEvent) => {
-    event.preventDefault()
-    return false
-  }, [])
-
   useEffect(() => {
     handleScroll()
   }, [handleScroll])
@@ -198,7 +193,6 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
         className="fixed z-5 top-0 left-1/2 -translate-x-1/2 overflow-x-auto w-screen h-screen snap-x snap-mandatory flex gap-1 cursor-e-resize"
         onScroll={handleScroll}
         onClick={handleClick}
-        onWheel={handleWheel}
         ref={scrollContainerRef}
         style={{
           color: textColor,
