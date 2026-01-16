@@ -207,7 +207,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
         ))}
       </div>
       <div
-        className="fixed bottom-4 left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline pointer-events-none"
+        className="fixed bottom-4 left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
         style={{ color: textColor }}
       >
         <div className="text-xs whitespace-nowrap max-md:w-21">
