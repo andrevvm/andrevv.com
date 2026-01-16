@@ -126,7 +126,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
   return (
     <>
       <div
-        className="w-screen h-screen flex gap-1 relative z-10 pointer-events-none items-center"
+        className="w-screen h-screen flex gap-1 relative z-10 max-md:z-5 pointer-events-none items-center"
         style={{
           backgroundColor: projects[scrollIndex].lightDark
             ? '#191919'
@@ -190,7 +190,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
         </div>
       </div>
       <div
-        className="fixed z-5 top-0 left-1/2 -translate-x-1/2 overflow-x-auto w-screen h-screen snap-x snap-mandatory flex gap-1 cursor-e-resize"
+        className="fixed z-5 max-md:z-10 top-0 left-1/2 -translate-x-1/2 overflow-x-auto w-screen h-screen snap-x snap-mandatory flex gap-1 cursor-e-resize"
         onScroll={handleScroll}
         onClick={handleClick}
         ref={scrollContainerRef}
