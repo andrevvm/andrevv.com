@@ -21,6 +21,11 @@ const PROJECT_FIELDS = `
       title
     }
   }
+  videosCollection {
+    items {
+      taskData
+    }
+  } 
   color
   lightDark
 `
@@ -69,7 +74,7 @@ export async function getProjectBySlug(slug: string | null): Promise<any> {
 export async function getAllProjects(isDraftMode: boolean): Promise<any[]> {
   const entries = await fetchGraphQL(
     `query {
-      projectCollection(limit: 35,where: { title_exists: true }, order: date_DESC, preview: ${
+      projectCollection(limit: 25,where: { title_exists: true }, order: date_DESC, preview: ${
         isDraftMode ? 'true' : 'false'
       }) {
         items {

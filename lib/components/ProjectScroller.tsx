@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
+import { getVideoAndThumbnail } from '../videoHelper'
 
 const ProjectThumbnail = ({
   project,
@@ -11,20 +12,19 @@ const ProjectThumbnail = ({
   index: number
   onThumbClick: (index: number) => void
 }) => {
+  const videoAndThumbnail = getVideoAndThumbnail(
+    project.videosCollection.items[0]?.taskData || null
+  )
   return (
     <div
       className="aspect-video h-12 w-auto flex-none  pointer-events-auto cursor-pointer "
       onClick={() => onThumbClick(index)}
     >
-      {project.mediaCollection.items.map((media: any) => (
-        <video
+      {project.videosCollection.items.map((video: any) => (
+        <img
           className="rounded-sm object-cover w-full h-full border-2 border-transparent hover:border-accent"
-          key={media.url}
-          src={media.url}
-          muted
-          loop
-          playsInline
-          preload="metadata"
+          key={video.taskData.videoSrc}
+          src={videoAndThumbnail?.thumbnail?.url}
         />
       ))}
     </div>
@@ -119,7 +119,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
   }, [])
 
   const textColor = useMemo(
-    () => (projects[scrollIndex].lightDark ? '#e3e3e3' : '#0c0c0c'),
+    () => (projects[scrollIndex].lightDark ? '#e3e3e3' : '#e3e3e3'),
     [projects, scrollIndex]
   )
 
@@ -130,7 +130,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
         style={{
           backgroundColor: projects[scrollIndex].lightDark
             ? '#191919'
-            : '#e0e0e0',
+            : '#191919',
           color: textColor,
         }}
       >
