@@ -1,5 +1,5 @@
 'use client'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import { getVideoAndThumbnail } from '../videoHelper'
 
@@ -50,6 +50,10 @@ const ProjectVideo = ({
       videoRef.current?.pause()
     }
   }, [videoRef, index, scrollIndex])
+
+  const videoAndThumbnail = getVideoAndThumbnail(
+    project.videosCollection.items[0]?.taskData || null
+  )
   return (
     <div
       className="absolute left-0"
@@ -61,7 +65,7 @@ const ProjectVideo = ({
         ref={videoRef}
         key={project.mediaCollection.items[0].url}
         className="w-full h-auto max-h-[90vh] object-contain rounded-sm"
-        src={project.mediaCollection.items[0].url}
+        src={videoAndThumbnail?.video?.url}
         muted
         loop
         playsInline
@@ -71,7 +75,7 @@ const ProjectVideo = ({
   )
 }
 
-export default function ProjectScroller({ projects }: { projects: any[] }) {
+export default function ProjectScroller({ projects, single=false }: { projects: any[], single?: boolean }) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const leftTransformRef = useRef<HTMLDivElement>(null)
   const rightTransformRef = useRef<HTMLDivElement>(null)
@@ -151,7 +155,7 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
         </div>
         <div className="basis-2/3 md:basis-1/2 flex flex-col gap-2 justify-center h-full ">
           <div className="w-full flex-1 relative flex items-start justify-start max-md:justify-center">
-            <h2 className=" leading-none pt-4">Andrew McCarthy</h2>
+            <h2 className=" leading-none pt-4 pointer-events-auto"><a href="/">Andrew McCarthy</a></h2>
           </div>
           <div className="aspect-video w-full relative flex items-center justify-center">
             {projects.map((project: any, index: number) => (
@@ -165,16 +169,18 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
           </div>
           <div className="w-full relative flex flex-1 items-center md:items-end justify-center md:justify-start py-0 gap-4 leading-none ">
             <h1 className="max-md:pb-8 md:py-4 text-center">
-              <a href="#" className="pointer-events-auto hover:text-accent">
+              <a href={projects[scrollIndex].slug} className="pointer-events-auto hover:text-accent">
                 {projects[scrollIndex].title}
               </a>
             </h1>
           </div>
         </div>
         <div className="flex-1 flex gap-0 overflow-hidden">
-          <motion.div
+          <AnimatePresence>
+            {!single && (<motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             ref={rightTransformRef}
             className="flex gap-0 relative"
           >
@@ -186,7 +192,9 @@ export default function ProjectScroller({ projects }: { projects: any[] }) {
                 onThumbClick={handleThumbClick}
               />
             ))}
-          </motion.div>
+          </motion.div>)}
+          
+          </AnimatePresence>
         </div>
       </div>
       <div

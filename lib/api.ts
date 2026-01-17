@@ -1,5 +1,6 @@
 const PROJECT_FIELDS = `
   title
+  slug
   description {
     json
   }
@@ -57,17 +58,20 @@ function extractProjectEntries(fetchResponse: any): any[] {
   return fetchResponse?.data?.projectCollection?.items
 }
 
-export async function getProjectBySlug(slug: string | null): Promise<any> {
+export async function getProjectBySlug(slug: string | null, isDraftMode: boolean): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
-      projectCollection(where: { slug: "${slug}" }, preview: true, limit: 1) {
+      projectCollection(where: { slug: "${slug}" }, preview: ${
+        isDraftMode ? 'true' : 'false'
+      }, limit: 1) {
         items {
           ${PROJECT_FIELDS}
         }
       }
     }`,
-    true
+    isDraftMode
   )
+  console.log('fetched',entry, slug)
   return extractProject(entry)
 }
 
