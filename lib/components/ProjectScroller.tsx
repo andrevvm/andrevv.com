@@ -1,5 +1,6 @@
 'use client'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+
 import { useRef, useEffect, useCallback, useMemo } from 'react'
 import { getVideoAndThumbnail } from '../videoHelper'
 import Link from 'next/link'
@@ -267,18 +268,21 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       >
         info
       </button>
+      <AnimatePresence>
       {singleProject && (
-        <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-4 left-4 z-10 leading-none">
+        <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-4 left-4 z-10 leading-none">
           <ul className="mb-8">
             {singleProject?.typeCollection?.items.map((type: TypeItem) => (
               <li key={type.title}>{type.title}</li>
             ))}
           </ul>
-          {singleProject?.description?.json?.content.map((content: any) => (
+          
+          {Array.isArray(singleProject?.description?.json?.content) && singleProject.description.json.content.map((content: any) => (
             <p className="leading-[1.2] normal-case" key={content.content[0].value}>{content.content.map((content: any) => content.value)}</p>
           ))}
         </motion.div>
       )}
+      </AnimatePresence>
     </>
   )
 }
