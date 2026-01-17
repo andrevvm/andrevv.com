@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital@0;1&display=block');
+
 @import 'tailwindcss';
 @font-face {
   font-family: 'Orator';
@@ -6,9 +8,10 @@
   font-style: normal;
 }
 
+
 :root {
   --light: #e3e3e3;
-  --dark: #191919;
+  --dark: #131313;
   --accent: #ff7ad5;
 }
 
@@ -23,7 +26,25 @@
 
 body {
   background: var(--color-background);
+  color: var(--color-foreground);
   font-family: 'Orator', monospace;
   text-transform: lowercase;
   letter-spacing: 0.05em;
+}
+
+p {
+  font-family: 'Spectral', serif;
+}
+
+p + p {
+  @apply mt-4;
+}
+
+a:hover,
+.link:hover {
+  @apply text-accent;
+}
+
+a.group:hover {
+  @apply text-inherit;
 }

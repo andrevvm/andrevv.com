@@ -1,4 +1,4 @@
-interface TaskData {
+export interface TaskData {
   transcodingStarted: boolean
   transcodingJobs: Array<{
     taskToken: string
