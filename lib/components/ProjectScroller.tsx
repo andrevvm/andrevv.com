@@ -251,8 +251,11 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
           <div
             id={`item-${index}`}
             key={index}
-            className="w-full h-full flex-none snap-center"
-          ></div>
+            className="w-full h-full flex-none snap-center flex  items-center justify-center pointer-events-none"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Link href={`/${projectList[index].slug}`} className="aspect-video w-1/2 h-auto  pointer-events-auto"></Link>
+          </div>
         ))}
       </div>
       <div
