@@ -14,15 +14,16 @@ const ProjectThumbnail = ({
 }: {
   project: Project
   index: number
-  onThumbClick: (index: number) => void
+  onThumbClick: (e: MouseEvent, index: number) => void
 }) => {
   const videoAndThumbnail = getVideoAndThumbnail(
     project.videosCollection.items[0]?.taskData || null
   )
   return (
-    <div
+    <Link
+      href={`/${project.slug}`}
       className="aspect-video h-12 w-auto flex-none pointer-events-auto cursor-pointer relative z-20"
-      onClick={() => onThumbClick(index)}
+      onClick={(e) => onThumbClick(e,index)}
     >
       {project.videosCollection.items.map((video: any) => (
         <img
@@ -31,7 +32,7 @@ const ProjectThumbnail = ({
           src={videoAndThumbnail?.thumbnail?.url}
         />
       ))}
-    </div>
+    </Link>
   )
 }
 
@@ -69,7 +70,7 @@ const ProjectVideo = ({
       <video
         ref={videoRef}
         key={videoAndThumbnail?.video?.url}
-        className="max-md:h-full max-md:w-auto object-top w-full h-auto object-cover md:object-contain rounded-sm relative"
+        className="max-md:h-full max-md:w-auto object-top w-full h-auto object-cover md:object-contain rounded-sm relative max-h-[calc(100vh-100px)]"
         src={videoAndThumbnail?.video?.url}
         muted
         loop
@@ -163,7 +164,8 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       })
     }
   }, [selectedIndex])
-  const handleThumbClick = useCallback((index: number) => {
+  const handleThumbClick = useCallback((e: MouseEvent, index: number) => {
+    e.preventDefault()
     const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
     if (item) {
       item.scrollIntoView({ behavior: 'smooth' })
@@ -218,8 +220,8 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
           </div>
         </div>
         <motion.div
-          initial={{ maxWidth: singleProject ? '0%' : '25%', opacity: 0 }}
-          animate={{ maxWidth: singleProject ? '0%' : '25%', opacity: 1 }}
+          initial={{ maxWidth: singleProject ? '8%' : '25%', opacity: 0 }}
+          animate={{ maxWidth: singleProject ? '8%' : '25%', opacity: 1 }}
           transition={{ duration: 0.75, ease: 'anticipate' }}
           className="basis-1/3 md:basis-1/4 flex max-md:flex-col gap-0 overflow-hidden">
           
