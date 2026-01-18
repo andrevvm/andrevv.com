@@ -254,12 +254,12 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
             className="w-full h-full flex-none snap-center flex  items-center justify-center pointer-events-none"
             onClick={(e) => e.stopPropagation()}
           >
-            <Link href={`/${projectList[index].slug}`} className="aspect-video w-1/2 h-auto  pointer-events-auto"></Link>
+            <Link href={`/${projectList[index].slug}`} className="aspect-video w-full md:w-1/2 h-auto  pointer-events-auto"></Link>
           </div>
         ))}
       </div>
       <div
-        className="fixed bottom-4 left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
+        className="fixed bottom-0 mx-md:h-[500px] pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-background left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
       >
         <div className="text-xs whitespace-nowrap max-md:w-21">
           {selectedIndex + 1} / {projectList.length}
@@ -267,8 +267,11 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         <div className="flex w-full gap-4 items-end leading-none justify-center text-center md:justify-end md:text-right">
           <Link
             href={`/${singleProject ? '' : selectedProject?.slug || ''}`}
-            className="flex gap-4 pointer-events-auto group items-end"
+            className="flex max-md:flex-col gap-x-4 gap-y-2 pointer-events-auto group items-end max-md:items-center"
           >
+            <span className="pb-0 md:hidden">
+              {selectedProject?.title}
+            </span>
             <span className="w-full">
               {selectedProject?.roleCollection.items
                 .map((role: RoleItem) => role.title)
@@ -280,9 +283,10 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
           </Link>
         </div>
         <div className="md:hidden max-md:w-21 flex items-end justify-end">
-          <span className="text-xs group-hover:text-accent" dangerouslySetInnerHTML={{ __html: `[${singleProject ? '<span class="relative top-px">×</span>' : '&hellip;'}]` }}></span>
+          <span className="text-xs group-hover:text-accent" dangerouslySetInnerHTML={{ __html: `[${singleProject ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}></span>
         </div>
       </div>
+      <Link href="/" className="fixed top-0 left-0 z-11 leading-none md:hidden p-4">Andrew McCarthy</Link>
       <button
         className="fixed top-4 right-4 z-10  leading-none link cursor-pointer"
       >
@@ -290,7 +294,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       </button>
       <AnimatePresence>
       {singleProject && (
-        <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-4 left-4 z-10 leading-none">
+        <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-0 max-md:pt-12 left-0 p-4 z-10 leading-none max-md:bg-[#00000066] max-md:pb-10 backdrop-blur-lg">
           <ul className="mb-4">
             {singleProject?.typeCollection?.items.map((type: TypeItem) => (
               <li key={type.title}>{type.title}</li>
