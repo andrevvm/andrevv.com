@@ -259,7 +259,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         ))}
       </div>
       <div
-        className="fixed bottom-0 mx-md:h-[500px] pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-background left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
+        className="fixed bottom-0 mx-md:h-[500px] pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-70% to-background left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
       >
         <div className="text-xs whitespace-nowrap max-md:w-21">
           {selectedIndex + 1} / {projectList.length}
