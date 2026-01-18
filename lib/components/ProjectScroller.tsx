@@ -6,6 +6,7 @@ import { useMediaQuery } from 'usehooks-ts'
 import { getVideoAndThumbnail } from '../videoHelper'
 import Link from 'next/link'
 import { Project, RoleItem, TypeItem, useProjectsStore } from '@/stores/projects'
+import { useRouter } from 'next/navigation'
 
 const ProjectThumbnail = ({
   project,
@@ -14,7 +15,7 @@ const ProjectThumbnail = ({
 }: {
   project: Project
   index: number
-  onThumbClick: (e: MouseEvent, index: number) => void
+  onThumbClick: (e: React.MouseEvent, index: number) => void
 }) => {
   const videoAndThumbnail = getVideoAndThumbnail(
     project.videosCollection.items[0]?.taskData || null
@@ -82,6 +83,8 @@ const ProjectVideo = ({
 }
 
 export default function ProjectScroller({ projects }: { projects: Project[] }) {
+  const router = useRouter()
+
   const { projectList, selectedIndex, singleProject } = useProjectsStore(state => state);
   useEffect(() => {
     useProjectsStore.setState({ projectList: projects })
@@ -90,8 +93,9 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const Projects = useMemo(() => {
     return projectList.length > 0 ? projectList : projects;
   }, [projectList, projects]);
-
   const isMobile = useMediaQuery('(max-width: 768px)')
+
+  const selectedProject = Projects[selectedIndex];
 
   useEffect(() => {
     if(singleProject) {
@@ -99,15 +103,20 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       if(index !== -1 && index !== selectedIndex) {
         const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
         if (item) {
-          item.scrollIntoView({ behavior: 'smooth' })
+          // const rect = item.getBoundingClientRect()
+          // const scrollX = isMobile ? 0 : window.scrollX + rect.left
+          // const scrollY = isMobile ? window.scrollY + rect.top : 0
+          // window.scrollTo({ left: scrollX, top: scrollY, behavior: 'smooth' })
         }
       }
     }
-  }, [Projects, singleProject])
+  }, [Projects, singleProject, selectedIndex, isMobile])
 
-  const selectedProject = useMemo(() => {
-    return Projects[selectedIndex];
-  }, [Projects, selectedIndex]);
+  useEffect(() => {
+    if(singleProject) {
+      router.push(`/${selectedProject.slug}`)
+    }
+  }, [singleProject, selectedProject, router])
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const leftTransformRef = useRef<HTMLDivElement>(null)
@@ -116,39 +125,43 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const handleScroll = useCallback(() => {
     const container = scrollContainerRef.current
     if (!container) return
-    const scrollPer = (container.scrollLeft) / container.scrollWidth
-    const scrollPerNext =
-      (container.scrollLeft + window.innerWidth) / container.scrollWidth
-
-    const scrollPerY = (container.scrollTop / container.scrollHeight)
-    const scrollPerYNext = (container.scrollTop + window.innerHeight + 20) / container.scrollHeight
-
-    // Update transforms directly via refs to avoid re-renders
-    if (leftTransformRef.current) {
-      if(isMobile) {
-        leftTransformRef.current.style.transform = `translateY(-${scrollPerY * 100}%)`
-      } else {
-        leftTransformRef.current.style.transform = `translateX(-${scrollPer * 100}%)`
+    
+    const totalScrollable = isMobile 
+      ? container.offsetHeight
+      : container.offsetWidth
+    const viewportSize = isMobile ? window.innerHeight : window.innerWidth
+    const scrollPos = isMobile ? window.scrollY : window.scrollX
+    
+    const scrollPer = totalScrollable > 0 ? scrollPos / totalScrollable : 0
+    const scrollPerNext = totalScrollable > 0 ? (scrollPos + viewportSize) / totalScrollable : 0
+    window.requestAnimationFrame(() => {
+      // Update transforms directly via refs to avoid re-renders
+      if (leftTransformRef.current) {
+        if(isMobile) {
+          leftTransformRef.current.style.transform = `translateY(-${scrollPer * 100}%)`
+        } else {
+          leftTransformRef.current.style.transform = `translateX(-${scrollPer * 100}%)`
+        }
       }
-    }
-    if (rightTransformRef.current) {
-      if(isMobile) {
-        rightTransformRef.current.style.transform = `translateY(-${scrollPerYNext * 100}%)`
-      } else {
-        rightTransformRef.current.style.transform = `translateX(-${scrollPerNext * 100}%)`
+      if (rightTransformRef.current) {
+        if(isMobile) {
+          rightTransformRef.current.style.transform = `translateY(-${scrollPerNext * 100}%)`
+        } else {
+          rightTransformRef.current.style.transform = `translateX(-${scrollPerNext * 100}%)`
+        }
       }
-    }
 
-    if(isMobile) {
-      useProjectsStore.setState({ selectedIndex: Math.round(Projects.length * scrollPerY) })
-    } else {
       useProjectsStore.setState({ selectedIndex: Math.round(Projects.length * scrollPer) })
-    }
+      
+    })
   }, [Projects, isMobile])
 
   useEffect(() => {
     if(projectList.length > 0) 
       handleScroll()
+    
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [handleScroll, projectList])
 
   const handleClick = useCallback(() => {
@@ -156,21 +169,29 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       `#item-${selectedIndex + 1}`
     )
     if (nextItem) {
-      nextItem.scrollIntoView({ behavior: 'smooth' })
+      const rect = nextItem.getBoundingClientRect()
+      const scrollX = isMobile ? 0 : window.scrollX + rect.left
+      const scrollY = isMobile ? window.scrollY + rect.top : 0
+      window.scrollTo({ left: scrollX, top: scrollY, behavior: 'smooth' })
     } else {
-      scrollContainerRef.current?.scrollTo({
+      window.scrollTo({
         left: 0,
+        top: 0,
         behavior: 'smooth',
       })
     }
-  }, [selectedIndex])
-  const handleThumbClick = useCallback((e: MouseEvent, index: number) => {
+  }, [selectedIndex, isMobile])
+  
+  const handleThumbClick = useCallback((e: React.MouseEvent, index: number) => {
     e.preventDefault()
     const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
     if (item) {
-      item.scrollIntoView({ behavior: 'smooth' })
+      const rect = item.getBoundingClientRect()
+      const scrollX = isMobile ? 0 : window.scrollX + rect.left
+      const scrollY = isMobile ? window.scrollY + rect.top : 0
+      window.scrollTo({ left: scrollX, top: scrollY, behavior: 'smooth' })
     }
-  }, [])
+  }, [isMobile])
 
   const textColor = useMemo(
     () => (selectedProject?.lightDark ? '#e3e3e3' : '#e3e3e3'),
@@ -180,7 +201,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   return (
     <>
       <div
-        className="w-screen h-screen flex max-md:flex-col gap-1 relative z-10 pointer-events-none items-center max-md:px-2"
+        className="fixed top-0 left-0 w-screen h-screen flex max-md:flex-col gap-1 z-10 pointer-events-none items-center max-md:px-2"
         
       >
         <motion.div animate={{ opacity: singleProject ? 0 : 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="max-md:h-1/3 md:basis-1/4 md:flex gap-1 overflow-hidden">
@@ -242,21 +263,19 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         </motion.div>
       </div>
       <div
-        className="fixed z-10 md:z-5 top-0 md:left-1/2 md:-translate-x-1/2 overflow-auto w-screen h-screen snap-y md:snap-x snap-mandatory flex max-md:flex-col gap-1"
-        style={{ cursor: !singleProject ? 'e-resize' : 'default' }}
-        onScroll={handleScroll}
+        className="absolute z-10 md:z-5 top-0 left-0 max-md:w-screen md:h-screen snap-y md:snap-x snap-mandatory flex max-md:flex-col md:flex-row pointer-events-none"
+        
         onClick={handleClick}
         ref={scrollContainerRef}
-
       >
         {projectList.map((_, index) => (
           <div
             id={`item-${index}`}
             key={index}
-            className="w-full h-full flex-none snap-center flex  items-center justify-center pointer-events-none"
+            className="w-screen h-screen flex-none snap-center flex items-center justify-center pointer-events-none"
             onClick={(e) => e.stopPropagation()}
           >
-            <Link href={`/${projectList[index].slug}`} className="aspect-video w-full md:w-1/2 h-auto  pointer-events-auto"></Link>
+            <Link href={`/${projectList[index].slug}`} className="aspect-video w-full md:w-1/2 h-auto pointer-events-auto"></Link>
           </div>
         ))}
       </div>

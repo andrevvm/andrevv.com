@@ -16,7 +16,7 @@ export default async function RootLayout({
   const allProjects = await getAllProjects(false)
   return (
     <html lang="en">
-      <body className="max-md:overflow-hidden">
+      <body>
         {children}
         <ProjectScroller projects={allProjects} />
       </body>
