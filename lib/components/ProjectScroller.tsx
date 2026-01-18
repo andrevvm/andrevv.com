@@ -286,6 +286,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
           <span className="text-xs group-hover:text-accent" dangerouslySetInnerHTML={{ __html: `[${singleProject ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}></span>
         </div>
       </div>
+      <div className="fixed top-0 left-0 w-full z-10 pointer-events-none md:hidden bg-linear-to-b from-background to-transparent h-30 from-30%"></div>
       <Link href="/" className="fixed top-0 left-0 z-11 leading-none md:hidden p-4">Andrew McCarthy</Link>
       <button
         className="fixed top-4 right-4 z-10  leading-none link cursor-pointer"
