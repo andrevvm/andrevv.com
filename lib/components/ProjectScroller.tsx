@@ -99,7 +99,6 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         }
       }
     }
-    console.log(singleProject)
   }, [Projects, singleProject])
 
   const selectedProject = useMemo(() => {
@@ -271,7 +270,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       <AnimatePresence>
       {singleProject && (
         <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-4 left-4 z-10 leading-none">
-          <ul className="mb-8">
+          <ul className="mb-4">
             {singleProject?.typeCollection?.items.map((type: TypeItem) => (
               <li key={type.title}>{type.title}</li>
             ))}
