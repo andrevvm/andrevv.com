@@ -259,7 +259,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         ))}
       </div>
       <div
-        className="fixed bottom-0 mx-md:h-[500px] pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-70% to-background left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
+        className="fixed bottom-0 max-md:h-30 pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-60% to-background left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
       >
         <div className="text-xs whitespace-nowrap max-md:w-21">
           {selectedIndex + 1} / {projectList.length}
@@ -294,7 +294,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       </button>
       <AnimatePresence>
       {singleProject && (
-        <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-0 max-md:pt-12 left-0 p-4 z-10 leading-none max-md:bg-[#00000066] max-md:pb-10 backdrop-blur-lg">
+        <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-0 max-md:pt-12 left-0 p-4 z-10 leading-none max-md:bg-[#00000066] max-md:pb-6 backdrop-blur-lg">
           <ul className="mb-4">
             {singleProject?.typeCollection?.items.map((type: TypeItem) => (
               <li key={type.title}>{type.title}</li>
