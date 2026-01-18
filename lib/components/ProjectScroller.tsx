@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { useMediaQuery } from 'usehooks-ts'
 import { getVideoAndThumbnail } from '../videoHelper'
 import Link from 'next/link'
 import { Project, RoleItem, TypeItem, useProjectsStore } from '@/stores/projects'
@@ -20,7 +21,7 @@ const ProjectThumbnail = ({
   )
   return (
     <div
-      className="aspect-video h-12 w-auto flex-none  pointer-events-auto cursor-pointer "
+      className="aspect-video h-12 w-auto flex-none pointer-events-auto cursor-pointer relative z-20"
       onClick={() => onThumbClick(index)}
     >
       {project.videosCollection.items.map((video: any) => (
@@ -59,7 +60,7 @@ const ProjectVideo = ({
   return (
     <Link
       href={`/${!singleProject ? project.slug : ''}`}
-      className="absolute left-0 pointer-events-none"
+      className="absolute left-0 pointer-events-none max-md:h-full max-md:w-full flex justify-center"
       style={{
         visibility: index == selectedIndex ? 'visible' : 'hidden',
         pointerEvents: singleProject ? 'auto' : 'none',
@@ -68,7 +69,7 @@ const ProjectVideo = ({
       <video
         ref={videoRef}
         key={videoAndThumbnail?.video?.url}
-        className="w-full h-auto object-contain rounded-sm"
+        className="max-md:h-full max-md:w-auto object-top w-full h-auto object-cover md:object-contain rounded-sm relative"
         src={videoAndThumbnail?.video?.url}
         muted
         loop
@@ -88,6 +89,8 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const Projects = useMemo(() => {
     return projectList.length > 0 ? projectList : projects;
   }, [projectList, projects]);
+
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
   useEffect(() => {
     if(singleProject) {
@@ -112,20 +115,35 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const handleScroll = useCallback(() => {
     const container = scrollContainerRef.current
     if (!container) return
-    const scrollPer = (container.scrollLeft + 0) / container.scrollWidth
+    const scrollPer = (container.scrollLeft) / container.scrollWidth
     const scrollPerNext =
-      (container.scrollLeft + window.innerWidth + 10) / container.scrollWidth
+      (container.scrollLeft + window.innerWidth) / container.scrollWidth
+
+    const scrollPerY = (container.scrollTop / container.scrollHeight)
+    const scrollPerYNext = (container.scrollTop + window.innerHeight + 20) / container.scrollHeight
 
     // Update transforms directly via refs to avoid re-renders
     if (leftTransformRef.current) {
-      leftTransformRef.current.style.transform = `translateX(-${scrollPer * 100}%)`
+      if(isMobile) {
+        leftTransformRef.current.style.transform = `translateY(-${scrollPerY * 100}%)`
+      } else {
+        leftTransformRef.current.style.transform = `translateX(-${scrollPer * 100}%)`
+      }
     }
     if (rightTransformRef.current) {
-      rightTransformRef.current.style.transform = `translateX(-${scrollPerNext * 100}%)`
+      if(isMobile) {
+        rightTransformRef.current.style.transform = `translateY(-${scrollPerYNext * 100}%)`
+      } else {
+        rightTransformRef.current.style.transform = `translateX(-${scrollPerNext * 100}%)`
+      }
     }
 
-    useProjectsStore.setState({ selectedIndex: Math.round(Projects.length * scrollPer) })
-  }, [Projects])
+    if(isMobile) {
+      useProjectsStore.setState({ selectedIndex: Math.round(Projects.length * scrollPerY) })
+    } else {
+      useProjectsStore.setState({ selectedIndex: Math.round(Projects.length * scrollPer) })
+    }
+  }, [Projects, isMobile])
 
   useEffect(() => {
     if(projectList.length > 0) 
@@ -160,13 +178,13 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   return (
     <>
       <div
-        className="w-screen h-screen flex gap-1 relative z-10 pointer-events-none items-center"
+        className="w-screen h-screen flex max-md:flex-col gap-1 relative z-10 pointer-events-none items-center max-md:px-2"
         
       >
-        <motion.div animate={{ opacity: singleProject ? 0 : 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="basis-1/6 md:basis-1/4 flex gap-1 overflow-hidden">
+        <motion.div animate={{ opacity: singleProject ? 0 : 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="max-md:h-1/3 md:basis-1/4 md:flex gap-1 overflow-hidden">
           <div
             ref={leftTransformRef}
-            className="flex gap-0 relative left-[16.665vw] md:left-[25vw] translate-x-0"
+            className="flex max-md:flex-col gap-0 relative max-md:top-[33.33vh] md:left-[25vw] translate-x-0"
           >
             {Projects.map((project: Project, index: number) => (
               <ProjectThumbnail
@@ -178,11 +196,11 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
             ))}
           </div>
         </motion.div>
-        <div className="flex-1 flex flex-col gap-2 justify-center h-full">
-          <div className="w-full flex-1 relative flex items-start justify-start max-md:justify-center">
-            <h2 className=" leading-none pt-4 pointer-events-auto"><Link href="/">Andrew McCarthy</Link></h2>
+        <div className="flex-1 flex flex-col gap-2 justify-center h-full max-md:w-full max-md:pointer-events-none">
+          <div className="max-md:hidden w-full flex-1 relative flex items-start justify-start max-md:justify-center">
+            <h2 className="leading-none pt-4 pointer-events-auto"><Link href="/">Andrew McCarthy</Link></h2>
           </div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="aspect-video w-full relative flex items-center justify-center">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="md:aspect-video max-md:h-full w-full relative flex items-center justify-center">
             {Projects.map((project: Project, index: number) => (
               <ProjectVideo
                 key={project.title}
@@ -191,7 +209,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
               />
             ))}
           </motion.div>
-          <div className="w-full relative flex flex-1 items-center md:items-end justify-center md:justify-start py-0 gap-4 leading-none ">
+          <div className="max-md:hidden w-full relative flex flex-1 items-center md:items-end justify-center md:justify-start py-0 gap-4 leading-none ">
             <h1 className="max-md:pb-8 md:py-4 text-center">
               <Link href={`/${selectedProject?.slug || ''}`} className="pointer-events-auto">
                 {selectedProject?.title}
@@ -203,11 +221,11 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
           initial={{ maxWidth: singleProject ? '0%' : '25%', opacity: 0 }}
           animate={{ maxWidth: singleProject ? '0%' : '25%', opacity: 1 }}
           transition={{ duration: 0.75, ease: 'anticipate' }}
-          className="basis-1/6 md:basis-1/4 flex gap-0 overflow-hidden">
+          className="basis-1/3 md:basis-1/4 flex max-md:flex-col gap-0 overflow-hidden">
           
           <div
             ref={rightTransformRef}
-            className="flex gap-0 relative"
+            className="flex max-md:flex-col gap-0 relative"
           >
             {projectList.map((project: Project, index: number) => (
               <ProjectThumbnail
@@ -222,7 +240,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         </motion.div>
       </div>
       <div
-        className="fixed z-5 top-0 left-1/2 -translate-x-1/2 overflow-x-auto w-screen h-screen snap-x snap-mandatory flex gap-1"
+        className="fixed z-10 md:z-5 top-0 md:left-1/2 md:-translate-x-1/2 overflow-auto w-screen h-screen snap-y md:snap-x snap-mandatory flex max-md:flex-col gap-1"
         style={{ cursor: !singleProject ? 'e-resize' : 'default' }}
         onScroll={handleScroll}
         onClick={handleClick}
