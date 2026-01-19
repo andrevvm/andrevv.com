@@ -1,12 +1,12 @@
 'use client'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 import { useRef, useEffect, useCallback, useMemo } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import { getVideoAndThumbnail } from '../videoHelper'
 import Link from 'next/link'
-import { Project, RoleItem, TypeItem, useProjectsStore } from '@/stores/projects'
-import { useRouter } from 'next/navigation'
+import { Project, RoleItem, useProjectsStore } from '@/stores/projects'
+import { useRouter,usePathname,useParams } from 'next/navigation'
 
 const ProjectThumbnail = ({
   project,
@@ -44,7 +44,8 @@ const ProjectVideo = ({
   project: Project
   index: number
 }) => {
-  const { selectedIndex, singleProject } = useProjectsStore(state => state);
+  const { selectedIndex } = useProjectsStore(state => state);
+  const {slug} = useParams()
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     if (index === selectedIndex) {
@@ -61,11 +62,11 @@ const ProjectVideo = ({
   )
   return (
     <Link
-      href={`/${!singleProject ? project.slug : ''}`}
+      href={`/${!slug ? project.slug : ''}`}
       className="absolute left-0 pointer-events-none max-md:h-full max-md:w-full flex justify-center"
       style={{
         visibility: index == selectedIndex ? 'visible' : 'hidden',
-        pointerEvents: singleProject ? 'auto' : 'none',
+        pointerEvents: slug ? 'auto' : 'none',
       }}
     >
       <video
@@ -84,8 +85,13 @@ const ProjectVideo = ({
 
 export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const router = useRouter()
+  const pathname = usePathname()
+  const {slug} = useParams()
 
-  const { projectList, selectedIndex, singleProject } = useProjectsStore(state => state);
+
+  const { projectList, selectedIndex } = useProjectsStore(state => state);
+
+  
   useEffect(() => {
     useProjectsStore.setState({ projectList: projects })
   }, [projects])
@@ -98,8 +104,8 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const selectedProject = Projects[selectedIndex];
 
   useEffect(() => {
-    if(singleProject) {
-      const index = Projects.findIndex(project => project.slug === singleProject.slug)
+    if(slug) {
+      const index = Projects.findIndex(project => project.slug === slug)
       if(index !== -1 && index !== selectedIndex) {
         const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
         if (item) {
@@ -110,13 +116,13 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         }
       }
     }
-  }, [Projects, singleProject, selectedIndex, isMobile])
+  }, [Projects, slug, selectedIndex, isMobile])
 
   useEffect(() => {
-    if(singleProject) {
-      router.push(`/${selectedProject.slug}`)
+    if(slug) {
+      router.replace(`/${selectedProject.slug}`)
     }
-  }, [singleProject, selectedProject, router])
+  }, [selectedProject, router])
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const leftTransformRef = useRef<HTMLDivElement>(null)
@@ -193,10 +199,6 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
     }
   }, [isMobile])
 
-  const textColor = useMemo(
-    () => (selectedProject?.lightDark ? '#e3e3e3' : '#e3e3e3'),
-    [selectedProject]
-  )
 
   return (
     <>
@@ -204,7 +206,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         className="fixed top-0 left-0 w-screen h-screen flex max-md:flex-col gap-1 z-10 pointer-events-none items-center max-md:px-2"
         
       >
-        <motion.div animate={{ opacity: singleProject ? 0 : 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="max-md:h-1/3 md:basis-1/4 md:flex gap-1 overflow-hidden">
+        <motion.div animate={{ opacity: slug && !isMobile ? 0 : 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="max-md:h-1/3 md:basis-1/4 md:flex gap-1 overflow-hidden">
           <div
             ref={leftTransformRef}
             className="flex max-md:flex-col gap-0 relative max-md:top-[33.33vh] md:left-[25vw] translate-x-0"
@@ -241,8 +243,8 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
           </div>
         </div>
         <motion.div
-          initial={{ maxWidth: singleProject ? '8%' : '25%', opacity: 0 }}
-          animate={{ maxWidth: singleProject ? '8%' : '25%', opacity: 1 }}
+          initial={{ maxWidth: slug ? '8%' : '25%', opacity: 0 }}
+          animate={{ maxWidth: slug ? '8%' : '25%', opacity: 1 }}
           transition={{ duration: 0.75, ease: 'anticipate' }}
           className="basis-1/3 md:basis-1/4 flex max-md:flex-col gap-0 overflow-hidden">
           
@@ -282,12 +284,14 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       <div
         className="fixed bottom-0 max-md:h-30 pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-60% to-background left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
       >
+        {projectList.length > 0 && (
         <div className="text-xs whitespace-nowrap max-md:w-21">
           {selectedIndex + 1} / {projectList.length}
         </div>
+        )}
         <div className="flex w-full gap-4 items-end leading-none justify-center text-center md:justify-end md:text-right">
           <Link
-            href={`/${singleProject ? '' : selectedProject?.slug || ''}`}
+            href={`/${slug ? '' : selectedProject?.slug || ''}`}
             className="flex max-md:flex-col gap-x-4 gap-y-2 pointer-events-auto group items-end max-md:items-center"
           >
             <span className="pb-0 md:hidden">
@@ -298,13 +302,13 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
                 .map((role: RoleItem) => role.title)
                 .join(', ')}
             </span>
-            <span className="text-xs group-hover:text-accent max-md:hidden" dangerouslySetInnerHTML={{ __html: `[${singleProject ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}>
+            <span className="text-xs group-hover:text-accent max-md:hidden" dangerouslySetInnerHTML={{ __html: `[${slug ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}>
               
             </span>
           </Link>
         </div>
         <div className="md:hidden max-md:w-21 flex items-end justify-end">
-          <span className="text-xs group-hover:text-accent" dangerouslySetInnerHTML={{ __html: `[${singleProject ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}></span>
+          <span className="text-xs group-hover:text-accent" dangerouslySetInnerHTML={{ __html: `[${slug ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}></span>
         </div>
       </div>
       <div className="fixed top-0 left-0 w-full z-10 pointer-events-none md:hidden bg-linear-to-b from-background to-transparent h-30 from-30%"></div>
@@ -314,21 +318,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
       >
         info
       </button>
-      <AnimatePresence>
-      {singleProject && (
-        <motion.div key={singleProject.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="text-pretty md:w-3/14 fixed top-0 max-md:pt-12 left-0 p-4 z-10 leading-none max-md:bg-[#00000066] max-md:pb-6 backdrop-blur-lg">
-          <ul className="mb-4">
-            {singleProject?.typeCollection?.items.map((type: TypeItem) => (
-              <li key={type.title}>{type.title}</li>
-            ))}
-          </ul>
-          
-          {Array.isArray(singleProject?.description?.json?.content) && singleProject.description.json.content.map((content: any) => (
-            <p className="leading-[1.2] normal-case" key={content.content[0].value}>{content.content.map((content: any) => content.value)}</p>
-          ))}
-        </motion.div>
-      )}
-      </AnimatePresence>
+      
     </>
   )
 }

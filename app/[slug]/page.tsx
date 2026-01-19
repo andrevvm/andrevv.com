@@ -1,9 +1,11 @@
 import { getProjectBySlug } from '@/lib/api'
 import ProjectPage from '@/lib/pages/project'
+import { Project } from '@/stores/projects'
 
-export default async function Work({ params }: { params: { slug: string } }) {
+export const revalidate = 60
+
+export default async function Work({ params }: { params: { slug: string } }) {  
   const {slug} = await params
-  const project = await getProjectBySlug(slug, false)
-  
-  return <ProjectPage project={project} />
+  const project: Project = await getProjectBySlug(slug, false)
+  return <ProjectPage key={project.slug} project={project} />
 }

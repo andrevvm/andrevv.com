@@ -52,11 +52,9 @@ export interface Project {
 export type ProjectsState = {
   selectedIndex: number
   projectList: Project[] | []
-  singleProject: Project | null
 }
 
 export const useProjectsStore = create<ProjectsState>((set) => ({
   selectedIndex: 0,
-  projectList: [],
-  singleProject: null
+  projectList: []
 }));
