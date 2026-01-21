@@ -1,11 +1,43 @@
-import { getProjectBySlug } from '@/lib/api'
+import { getAllProjects, getProjectBySlug } from '@/lib/api'
 import ProjectPage from '@/lib/pages/project'
-import { Project } from '@/stores/projects'
-
+import type { Project } from '@/stores/projects'
+import { Metadata } from 'next'
 export const revalidate = 60
 
-export default async function Work({ params }: { params: { slug: string } }) {  
-  const {slug} = await params
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
+  const { slug } = await params
+  const project: Project = await getProjectBySlug(slug, false)
+
+  return {
+    title: `${project.title} — Andrew McCarthy`,
+    description: Array.isArray(project.description?.json?.content)
+      ? project.description?.json?.content
+          .flatMap((content: { content: Array<{ value: string }> }) =>
+            content.content.map((item: { value: string }) => item.value),
+          )
+          .join(' ')
+      : null,
+  }
+}
+
+export async function generateStaticParams() {
+  const allProjects = await getAllProjects(false)
+
+  return allProjects.map((project: Project) => ({
+    slug: project.slug,
+  }))
+}
+
+export default async function Project({
+  params,
+}: {
+  params: { slug: string }
+}) {
+  const { slug } = await params
   const project: Project = await getProjectBySlug(slug, false)
   return <ProjectPage key={project.slug} project={project} />
 }

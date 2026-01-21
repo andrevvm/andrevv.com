@@ -1,12 +1,12 @@
 'use client'
 import { motion } from 'framer-motion'
 
-import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { useRef, useEffect, useCallback, useMemo, useState } from 'react'
 import { useMediaQuery } from 'usehooks-ts'
 import { getVideoAndThumbnail } from '../videoHelper'
 import Link from 'next/link'
 import { Project, RoleItem, useProjectsStore } from '@/stores/projects'
-import { useRouter,usePathname,useParams } from 'next/navigation'
+import { useRouter, usePathname, useParams } from 'next/navigation'
 
 const ProjectThumbnail = ({
   project,
@@ -18,19 +18,21 @@ const ProjectThumbnail = ({
   onThumbClick: (e: React.MouseEvent, index: number) => void
 }) => {
   const videoAndThumbnail = getVideoAndThumbnail(
-    project.videosCollection.items[0]?.taskData || null
+    project.videosCollection.items[0]?.taskData || null,
   )
   return (
     <Link
       href={`/${project.slug}`}
       className="aspect-video h-12 w-auto flex-none pointer-events-auto cursor-pointer relative z-20"
-      onClick={(e) => onThumbClick(e,index)}
+      onClick={(e) => onThumbClick(e, index)}
+      draggable={false}
     >
       {project.videosCollection.items.map((video: any) => (
         <img
           className="rounded-sm object-cover w-full h-full border-2 border-transparent hover:border-accent"
           key={video.taskData.videoSrc}
           src={videoAndThumbnail?.thumbnail?.url}
+          draggable={false}
         />
       ))}
     </Link>
@@ -44,8 +46,8 @@ const ProjectVideo = ({
   project: Project
   index: number
 }) => {
-  const { selectedIndex } = useProjectsStore(state => state);
-  const {slug} = useParams()
+  const { selectedIndex } = useProjectsStore((state) => state)
+  const { slug } = useParams()
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     if (index === selectedIndex) {
@@ -58,15 +60,14 @@ const ProjectVideo = ({
   }, [videoRef, index, selectedIndex])
 
   const videoAndThumbnail = getVideoAndThumbnail(
-    project.videosCollection.items[0]?.taskData || null
+    project.videosCollection.items[0]?.taskData || null,
   )
   return (
     <Link
       href={`/${!slug ? project.slug : ''}`}
-      className="absolute left-0 pointer-events-none max-md:h-full max-md:w-full flex justify-center"
+      className="absolute left-0 pointer-events-auto max-md:h-full max-md:w-full flex justify-center"
       style={{
         visibility: index == selectedIndex ? 'visible' : 'hidden',
-        pointerEvents: slug ? 'auto' : 'none',
       }}
     >
       <video
@@ -85,130 +86,125 @@ const ProjectVideo = ({
 
 export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const router = useRouter()
-  const pathname = usePathname()
-  const {slug} = useParams()
+  const { slug } = useParams()
 
+  const { projectList, selectedIndex } = useProjectsStore((state) => state)
 
-  const { projectList, selectedIndex } = useProjectsStore(state => state);
-
-  
   useEffect(() => {
     useProjectsStore.setState({ projectList: projects })
   }, [projects])
 
   const Projects = useMemo(() => {
-    return projectList.length > 0 ? projectList : projects;
-  }, [projectList, projects]);
+    return projectList.length > 0 ? projectList : projects
+  }, [projectList, projects])
   const isMobile = useMediaQuery('(max-width: 768px)')
 
-  const selectedProject = Projects[selectedIndex];
+  const selectedProject = slug
+    ? projects.find((project) => project.slug === slug)
+    : Projects[selectedIndex]
 
   useEffect(() => {
-    if(slug) {
-      const index = Projects.findIndex(project => project.slug === slug)
-      if(index !== -1 && index !== selectedIndex) {
-        const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
-        if (item) {
-          // const rect = item.getBoundingClientRect()
-          // const scrollX = isMobile ? 0 : window.scrollX + rect.left
-          // const scrollY = isMobile ? window.scrollY + rect.top : 0
-          // window.scrollTo({ left: scrollX, top: scrollY, behavior: 'smooth' })
-        }
-      }
+    const gotoSlug = projectList[selectedIndex]?.slug
+    if (slug && gotoSlug !== slug && gotoSlug) {
+      router.replace(`/${gotoSlug}`)
     }
-  }, [Projects, slug, selectedIndex, isMobile])
-
-  useEffect(() => {
-    if(slug) {
-      router.replace(`/${selectedProject.slug}`)
-    }
-  }, [selectedProject, router])
+  }, [selectedIndex, router])
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const leftTransformRef = useRef<HTMLDivElement>(null)
   const rightTransformRef = useRef<HTMLDivElement>(null)
 
-  const handleScroll = useCallback(() => {
-    const container = scrollContainerRef.current
-    if (!container) return
-    
-    const totalScrollable = isMobile 
-      ? container.offsetHeight
-      : container.offsetWidth
-    const viewportSize = isMobile ? window.innerHeight : window.innerWidth
-    const scrollPos = isMobile ? window.scrollY : window.scrollX
-    
-    const scrollPer = totalScrollable > 0 ? scrollPos / totalScrollable : 0
-    const scrollPerNext = totalScrollable > 0 ? (scrollPos + viewportSize) / totalScrollable : 0
-    window.requestAnimationFrame(() => {
-      // Update transforms directly via refs to avoid re-renders
-      if (leftTransformRef.current) {
-        if(isMobile) {
-          leftTransformRef.current.style.transform = `translateY(-${scrollPer * 100}%)`
-        } else {
-          leftTransformRef.current.style.transform = `translateX(-${scrollPer * 100}%)`
-        }
-      }
-      if (rightTransformRef.current) {
-        if(isMobile) {
-          rightTransformRef.current.style.transform = `translateY(-${scrollPerNext * 100}%)`
-        } else {
-          rightTransformRef.current.style.transform = `translateX(-${scrollPerNext * 100}%)`
-        }
-      }
-
-      useProjectsStore.setState({ selectedIndex: Math.round(Projects.length * scrollPer) })
-      
-    })
-  }, [Projects, isMobile])
-
   useEffect(() => {
-    if(projectList.length > 0) 
-      handleScroll()
-    
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [handleScroll, projectList])
-
-  const handleClick = useCallback(() => {
-    const nextItem = scrollContainerRef.current?.querySelector(
-      `#item-${selectedIndex + 1}`
-    )
-    if (nextItem) {
-      const rect = nextItem.getBoundingClientRect()
-      const scrollX = isMobile ? 0 : window.scrollX + rect.left
-      const scrollY = isMobile ? window.scrollY + rect.top : 0
-      window.scrollTo({ left: scrollX, top: scrollY, behavior: 'smooth' })
-    } else {
-      window.scrollTo({
-        left: 0,
-        top: 0,
-        behavior: 'smooth',
-      })
-    }
-  }, [selectedIndex, isMobile])
-  
-  const handleThumbClick = useCallback((e: React.MouseEvent, index: number) => {
-    e.preventDefault()
+    const index = Projects.findIndex((project) => project.slug === slug)
     const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
+    console.log(index, item)
     if (item) {
       const rect = item.getBoundingClientRect()
       const scrollX = isMobile ? 0 : window.scrollX + rect.left
       const scrollY = isMobile ? window.scrollY + rect.top : 0
-      window.scrollTo({ left: scrollX, top: scrollY, behavior: 'smooth' })
+      window.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' })
     }
-  }, [isMobile])
+  }, [Projects, slug, isMobile])
 
+  const [scrollPer, setScrollPer] = useState(0)
+  const [scrollPerNext, setScrollPerNext] = useState(0)
+
+  const handleScroll = useCallback(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const totalScrollable = isMobile
+      ? container.offsetHeight
+      : container.offsetWidth
+    const viewportSize = isMobile ? window.innerHeight : window.innerWidth
+    const scrollPos = isMobile ? window.scrollY : window.scrollX
+
+    const scrollPer = totalScrollable > 0 ? scrollPos / totalScrollable : 0
+    const scrollPerNext =
+      totalScrollable > 0 ? (scrollPos + viewportSize) / totalScrollable : 0
+    window.requestAnimationFrame(() => {
+      setScrollPer(scrollPer)
+      setScrollPerNext(scrollPerNext)
+      // if (leftTransformRef.current) {
+      //   if (isMobile) {
+      //     leftTransformRef.current.style.transform = `translateY(-${scrollPer * 100}%)`
+      //   } else {
+      //     leftTransformRef.current.style.transform = `translateX(-${scrollPer * 100}%)`
+      //   }
+      // }
+      // if (rightTransformRef.current) {
+      //   if (isMobile) {
+      //     rightTransformRef.current.style.transform = `translateY(-${scrollPerNext * 100}%)`
+      //   } else {
+      //     rightTransformRef.current.style.transform = `translateX(-${scrollPerNext * 100}%)`
+      //   }
+      // }
+
+      useProjectsStore.setState({
+        selectedIndex: Math.round(Projects.length * scrollPer),
+      })
+    })
+  }, [Projects, isMobile])
+
+  useEffect(() => {
+    if (projectList.length > 0) handleScroll()
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [handleScroll, projectList])
+
+  const handleThumbClick = useCallback(
+    (e: React.MouseEvent, index: number) => {
+      e.preventDefault()
+      const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
+      if (item) {
+        const rect = item.getBoundingClientRect()
+        const scrollX = isMobile ? 0 : window.scrollX + rect.left
+        const scrollY = isMobile ? window.scrollY + rect.top : 0
+        window.scrollTo({ left: scrollX, top: scrollY, behavior: 'smooth' })
+      }
+    },
+    [isMobile],
+  )
 
   return (
     <>
-      <div
-        className="fixed top-0 left-0 w-screen h-screen flex max-md:flex-col gap-1 z-10 pointer-events-none items-center max-md:px-2"
-        
-      >
-        <motion.div animate={{ opacity: slug && !isMobile ? 0 : 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="max-md:h-1/3 md:basis-1/4 md:flex gap-1 overflow-hidden">
-          <div
-            ref={leftTransformRef}
+      <div className="md:hidden fixed top-0 left-0 z-20 p-4 leading-none">
+        <Link href="/">Andrew McCarthy</Link>
+      </div>
+      <div className="fixed top-0 left-0 w-screen h-screen flex max-md:flex-col gap-1 z-10 items-center max-md:px-2">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: slug && !isMobile ? 0 : 1 }}
+          transition={{ duration: 0.75, ease: 'anticipate' }}
+          className="max-md:h-1/3 md:basis-1/4 md:flex gap-1 overflow-hidden"
+        >
+          <motion.div
+            animate={{
+              x: `-${isMobile ? 0 : scrollPer * 100}%`,
+              y: `-${isMobile ? scrollPer * 100 : 0}%`,
+            }}
+            transition={{ duration: 0.0, ease: 'circOut' }}
             className="flex max-md:flex-col gap-0 relative max-md:top-[33.33vh] md:left-[25vw] translate-x-0"
           >
             {Projects.map((project: Project, index: number) => (
@@ -219,13 +215,22 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
                 onThumbClick={handleThumbClick}
               />
             ))}
-          </div>
+          </motion.div>
         </motion.div>
-        <div className="flex-1 flex flex-col gap-2 justify-center h-full max-md:w-full max-md:pointer-events-none">
+        <div className="flex-1 flex flex-col gap-2 justify-center h-full max-md:w-full">
           <div className="max-md:hidden w-full flex-1 relative flex items-start justify-start max-md:justify-center">
-            <h2 className="leading-none pt-4 pointer-events-auto"><Link href="/">Andrew McCarthy</Link></h2>
+            <h2 className="leading-none pt-4 pointer-events-auto">
+              <Link href={`/${slug ? '' : selectedProject?.slug || '/'}`}>
+                {selectedProject?.title}
+              </Link>
+            </h2>
           </div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.75, ease: 'anticipate' }} className="md:aspect-video max-md:h-full w-full relative flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.75, ease: 'anticipate' }}
+            className="md:aspect-video max-md:h-full w-full relative flex items-center justify-center"
+          >
             {Projects.map((project: Project, index: number) => (
               <ProjectVideo
                 key={project.title}
@@ -234,22 +239,20 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
               />
             ))}
           </motion.div>
-          <div className="max-md:hidden w-full relative flex flex-1 items-center md:items-end justify-center md:justify-start py-0 gap-4 leading-none ">
-            <h1 className="max-md:pb-8 md:py-4 text-center">
-              <Link href={`/${selectedProject?.slug || ''}`} className="pointer-events-auto">
-                {selectedProject?.title}
-              </Link>
-            </h1>
-          </div>
+          <div className="max-md:hidden w-full relative flex flex-1 items-center md:items-end justify-center md:justify-start py-0 gap-4 leading-none "></div>
         </div>
         <motion.div
-          initial={{ maxWidth: slug ? '8%' : '25%', opacity: 0 }}
-          animate={{ maxWidth: slug ? '8%' : '25%', opacity: 1 }}
-          transition={{ duration: 0.75, ease: 'anticipate' }}
-          className="basis-1/3 md:basis-1/4 flex max-md:flex-col gap-0 overflow-hidden">
-          
-          <div
-            ref={rightTransformRef}
+          initial={{ maxWidth: slug && !isMobile ? '8%' : '25%', opacity: 0 }}
+          animate={{ maxWidth: slug && !isMobile ? '8%' : '25%', opacity: 1 }}
+          transition={{ duration: 1, ease: 'anticipate' }}
+          className="basis-1/3 md:basis-1/4 flex max-md:flex-col gap-0 overflow-hidden"
+        >
+          <motion.div
+            animate={{
+              x: `-${isMobile ? 0 : scrollPerNext * 100}%`,
+              y: `-${isMobile ? scrollPerNext * 100 : 0}%`,
+            }}
+            transition={{ duration: 0.1, ease: 'circOut' }}
             className="flex max-md:flex-col gap-0 relative"
           >
             {projectList.map((project: Project, index: number) => (
@@ -260,65 +263,50 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
                 onThumbClick={handleThumbClick}
               />
             ))}
-          </div>
-          
+          </motion.div>
         </motion.div>
       </div>
       <div
-        className="absolute z-10 md:z-5 top-0 left-0 max-md:w-screen md:h-screen snap-y md:snap-x snap-mandatory flex max-md:flex-col md:flex-row pointer-events-none"
-        
-        onClick={handleClick}
+        className="absolute z-5 top-0 left-0 max-md:w-screen md:h-screen flex max-md:flex-col md:flex-row"
         ref={scrollContainerRef}
       >
         {projectList.map((_, index) => (
           <div
             id={`item-${index}`}
             key={index}
-            className="w-screen h-screen flex-none snap-center flex items-center justify-center pointer-events-none"
+            className="w-screen h-screen flex-none snap-start flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
-          >
-            <Link href={`/${projectList[index].slug}`} className="aspect-video w-full md:w-1/2 h-auto pointer-events-auto"></Link>
-          </div>
+          ></div>
         ))}
       </div>
-      <div
-        className="fixed bottom-0 max-md:h-30 pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-60% to-background left-0 px-4 leading-none z-10 w-full flex justify-between items-baseline-last pointer-events-none"
-      >
-        {projectList.length > 0 && (
-        <div className="text-xs whitespace-nowrap max-md:w-21">
-          {selectedIndex + 1} / {projectList.length}
+      <div className="fixed bottom-0 max-md:h-30 pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-60% to-background left-0 px-4 leading-none z-10 w-full flex gap-2 justify-between items-baseline-last pointer-events-none">
+        <div className="basis-1/3 max-md:hidden">
+          <Link href="/">Andrew McCarthy</Link>
         </div>
+        {projectList.length > 0 && (
+          <div className="text-xs whitespace-nowrap max-md:w-21 max-md:hidden">
+            {selectedIndex + 1} / {projectList.length}
+          </div>
         )}
         <div className="flex w-full gap-4 items-end leading-none justify-center text-center md:justify-end md:text-right">
           <Link
             href={`/${slug ? '' : selectedProject?.slug || ''}`}
             className="flex max-md:flex-col gap-x-4 gap-y-2 pointer-events-auto group items-end max-md:items-center"
           >
-            <span className="pb-0 md:hidden">
-              {selectedProject?.title}
-            </span>
+            <span className="pb-0 md:hidden">{selectedProject?.title}</span>
             <span className="w-full">
               {selectedProject?.roleCollection.items
                 .map((role: RoleItem) => role.title)
                 .join(', ')}
             </span>
-            <span className="text-xs group-hover:text-accent max-md:hidden" dangerouslySetInnerHTML={{ __html: `[${slug ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}>
-              
-            </span>
           </Link>
-        </div>
-        <div className="md:hidden max-md:w-21 flex items-end justify-end">
-          <span className="text-xs group-hover:text-accent" dangerouslySetInnerHTML={{ __html: `[${slug ? '<span class="relative top-px">×</span>' : '<span class="relative -top-0.75">&hellip;</span>'}]` }}></span>
         </div>
       </div>
       <div className="fixed top-0 left-0 w-full z-10 pointer-events-none md:hidden bg-linear-to-b from-background to-transparent h-30 from-30%"></div>
-      <Link href="/" className="fixed top-0 left-0 z-11 leading-none md:hidden p-4">Andrew McCarthy</Link>
-      <button
-        className="fixed top-4 right-4 z-10  leading-none link cursor-pointer"
-      >
+
+      <button className="fixed top-4 right-4 z-10  leading-none link cursor-pointer">
         info
       </button>
-      
     </>
   )
 }
