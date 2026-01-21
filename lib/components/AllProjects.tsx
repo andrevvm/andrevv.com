@@ -149,8 +149,9 @@ export const Thumbnails = ({
   top?: boolean
 }) => {
   const isMobile = useMediaQuery('(max-width: 768px)')
+  const { slug } = useParams()
   const topOffset = useMemo(() => {
-    return top ? (isMobile ? `37.5vh` : `25vh`) : '0'
+    return top ? (isMobile ? `37.5vh` : slug ? `12.5vh` : `25vh`) : '0'
   }, [top, isMobile])
 
   return (
@@ -171,6 +172,9 @@ export const Thumbnails = ({
 const Video = ({ project, idx }: { project: Project; idx: number }) => {
   const selectedIndex = useProjectsStore((state) => state.selectedIndex)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const videoAndThumbnail = getVideoAndThumbnail(
+    project.videosCollection.items[0]?.taskData || null,
+  )
   useEffect(() => {
     if (selectedIndex === idx) {
       videoRef.current?.play()
@@ -178,36 +182,47 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
       videoRef.current?.pause()
     }
   }, [selectedIndex, idx])
+  const { slug } = useParams()
   return (
-    <video
-      ref={videoRef}
-      style={{
-        visibility: selectedIndex === idx ? 'visible' : 'hidden',
-      }}
-      src={project.videosCollection.items[0]?.taskData?.videoSrc}
-      className="absolute left-1/2 -translate-x-1/2 h-full w-auto object-cover rounded-sm"
-      muted
-      playsInline
-      loop
-    />
+    <Link href={`/${slug ? '/' : project.slug}`}>
+      <video
+        ref={videoRef}
+        style={{
+          visibility: selectedIndex === idx ? 'visible' : 'hidden',
+        }}
+        src={videoAndThumbnail?.video?.url}
+        className="absolute left-1/2 -translate-x-1/2 h-full w-auto object-cover rounded-sm"
+        muted
+        playsInline
+        loop
+      />
+    </Link>
   )
 }
 
 export default function AllProjects({ projects }: { projects: Project[] }) {
   const { per, perNext } = useScrollState((state) => state)
+  const { slug } = useParams()
   return (
     <>
-      <div className="fixed w-screen h-screen flex flex-col">
+      <motion.div
+        animate={{ width: `${slug ? '8/14' : '11/14'}%` }}
+        className="fixed left-3/14 h-screen flex flex-col items-center"
+      >
         <Thumbnails top={true} per={per} projects={projects} />
-        <div className="basis-1/2 max-md:basis-1/4 flex justify-center py-1">
+        <motion.div
+          initial={{ height: '50%' }}
+          animate={{ height: slug ? '75%' : '50%' }}
+          className="max-md:basis-1/4 flex justify-center py-1"
+        >
           <div className="aspect-video h-full w-auto  relative">
             {projects.map((project, idx) => (
               <Video key={project.slug} project={project} idx={idx} />
             ))}
           </div>
-        </div>
+        </motion.div>
         <Thumbnails per={perNext} projects={projects} />
-      </div>
+      </motion.div>
       <Scroller projects={projects} />
     </>
   )
