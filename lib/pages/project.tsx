@@ -4,7 +4,12 @@ import { motion } from 'framer-motion'
 
 export default function ProjectPage({ project }: { project: Project }) {
   return (
-    <motion.div className="text-pretty p-4 leading-none max-md:pb-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="text-pretty p-4 leading-none max-md:pb-6"
+    >
       <ul className="mb-4">
         {project?.typeCollection?.items.map((type: TypeItem) => (
           <li key={type.title}>{type.title}</li>

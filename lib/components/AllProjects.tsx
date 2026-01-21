@@ -21,6 +21,10 @@ function Scroller({ projects }: { projects: Project[] }) {
   const [scrollPer, setScrollPer] = useState(0)
   const [scrollPerNext, setScrollPerNext] = useState(0)
   const [scrollIndex, setScrollIndex] = useState(0)
+  const [hasInteracted, setHasInteracted] = useState(false)
+  const isMobile = useMediaQuery('(max-width: 768px)')
+  const { slug } = useParams()
+  const router = useRouter()
 
   // update scroll y state
   const updateScrollY = () =>
@@ -28,12 +32,37 @@ function Scroller({ projects }: { projects: Project[] }) {
       setScrollY(window.scrollY)
     })
 
+  //initiate on mount
   useEffect(() => {
     // call updateScrollPos on mount
     window.addEventListener('scroll', updateScrollY)
     updateScrollY()
+
+    window.addEventListener(
+      'click',
+      () => {
+        setHasInteracted(true)
+      },
+      { once: true },
+    )
+    window.addEventListener(
+      'scroll',
+      () => {
+        setHasInteracted(true)
+      },
+      { once: true },
+    )
   }, [])
 
+  useEffect(() => {
+    if (slug && !hasInteracted) {
+      const index = projects.findIndex((project) => project.slug === slug)
+      const element = document.getElementById(`scroller-${index}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'instant' })
+      }
+    }
+  }, [projects])
   // scrollY updates
   useEffect(() => {
     const updateScrollState = () => {
@@ -45,15 +74,14 @@ function Scroller({ projects }: { projects: Project[] }) {
     window.requestAnimationFrame(updateScrollState)
   }, [scrollY, divider])
 
-  const { slug } = useParams()
-  const router = useRouter()
   // update selected index on scroll index change
   useEffect(() => {
     useProjectsStore.setState({ selectedIndex: scrollIndex })
+    if (!hasInteracted) return
     if (slug) {
-      router.replace(`/${projects[scrollIndex].slug}`)
+      router.replace(isMobile ? `/` : `/${projects[scrollIndex].slug}`)
     }
-  }, [scrollIndex, router])
+  }, [scrollIndex, router, hasInteracted])
 
   // update store
   useEffect(() => {
@@ -157,9 +185,10 @@ export const Thumbnails = ({
   return (
     <div className="flex-1 block overflow-hidden items-center">
       <motion.div
+        initial={{ opacity: 0 }}
         className="relative flex flex-col overflow-hidden items-center"
-        animate={{ y: `-${per * 100}%`, top: topOffset }}
-        transition={{ duration: 0 }}
+        animate={{ y: `-${per * 100}%`, top: topOffset, opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'circOut' }}
       >
         {projects.map((project, idx) => (
           <ProjectThumbnail key={project.slug} project={project} index={idx} />
@@ -177,7 +206,9 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
   )
   useEffect(() => {
     if (selectedIndex === idx) {
-      videoRef.current?.play()
+      videoRef.current?.play().catch((error) => {
+        console.warn('Error playing video:', error)
+      })
     } else {
       videoRef.current?.pause()
     }
@@ -190,7 +221,10 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
         style={{
           visibility: selectedIndex === idx ? 'visible' : 'hidden',
         }}
-        src={videoAndThumbnail?.video?.url}
+        src={videoAndThumbnail?.video?.url1080 || videoAndThumbnail?.video?.url}
+        poster={
+          videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
+        }
         className="absolute left-1/2 -translate-x-1/2 h-full w-auto object-cover rounded-sm"
         muted
         playsInline
@@ -203,15 +237,27 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
 export default function AllProjects({ projects }: { projects: Project[] }) {
   const { per, perNext } = useScrollState((state) => state)
   const { slug } = useParams()
+  const isMobile = useMediaQuery('(max-width: 768px)')
   return (
     <>
       <motion.div
-        animate={{ width: `${slug ? '8/14' : '11/14'}%` }}
-        className="fixed left-3/14 h-screen flex flex-col items-center"
+        initial={{ opacity: 0 }}
+        animate={{
+          width: `${slug && !isMobile ? (11 / 14) * 100 : (8 / 14) * 100}%`,
+          filter: slug && isMobile ? 'blur(10px)' : 'none',
+          opacity: slug && isMobile ? 0.8 : 1,
+        }}
+        transition={{
+          duration: 0.5,
+          ease: 'anticipate',
+          filter: { duration: 0.5, ease: 'easeInOut' },
+        }}
+        className="fixed left-3/14 h-screen w-8/14 flex flex-col items-center"
       >
         <Thumbnails top={true} per={per} projects={projects} />
         <motion.div
           initial={{ height: '50%' }}
+          transition={{ duration: 0.5, ease: 'anticipate' }}
           animate={{ height: slug ? '75%' : '50%' }}
           className="max-md:basis-1/4 flex justify-center py-1"
         >

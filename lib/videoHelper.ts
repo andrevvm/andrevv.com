@@ -55,6 +55,7 @@ export interface TaskData {
 export interface VideoThumbnailResult {
   video: {
     url: string
+    url1080: string
     src: string
     bitrate?: number
     width?: number
@@ -62,6 +63,11 @@ export interface VideoThumbnailResult {
     duration?: string
   }
   thumbnail: {
+    url: string
+    width: number
+    height: number
+  } | null
+  poster: {
     url: string
     width: number
     height: number
@@ -84,10 +90,14 @@ export function getVideoAndThumbnail(
   const originalVideoSrc = taskData.videoSrc
 
   // Extract transcoded videos and thumbnails from the first completed transcoding result
-  let transcodedVideo:
-    | TaskData['transcodingResults'][0]['statuses'][string]['videos'][0]
-    | null = null
+  let transcodedVideo: {
+    low: TaskData['transcodingResults'][0]['statuses'][string]['videos'][0]
+    high: TaskData['transcodingResults'][0]['statuses'][string]['videos'][0]
+  } | null = null
   let thumbnail:
+    | TaskData['transcodingResults'][0]['statuses'][string]['images'][0]
+    | null = null
+  let poster:
     | TaskData['transcodingResults'][0]['statuses'][string]['images'][0]
     | null = null
 
@@ -108,31 +118,42 @@ export function getVideoAndThumbnail(
 
     if (completedStatus) {
       // Get the highest quality video (highest bitrate)
-      transcodedVideo = completedStatus.videos.reduce((prev, current) => {
-        return (current.bitrate || 0) > (prev.bitrate || 0) ? current : prev
-      }, completedStatus.videos[0])
+      transcodedVideo = {
+        low: completedStatus.videos[0],
+        high: completedStatus.videos[1],
+      }
 
       if (completedStatus.images && completedStatus.images.length > 0) {
         thumbnail = completedStatus.images[1]
+        poster = completedStatus.images[0]
       }
     }
   }
 
   // Prefer transcoded video if available, otherwise fall back to original
-  const videoUrl = transcodedVideo?.url || originalVideoSrc
+  const url540 = transcodedVideo?.low?.url || originalVideoSrc
+  const url1080 = transcodedVideo?.high?.url || originalVideoSrc
   const videoSrc = originalVideoSrc.startsWith('//')
     ? `https:${originalVideoSrc}`
     : originalVideoSrc
 
   return {
     video: {
-      url: videoUrl,
+      url: url540,
+      url1080: url1080,
       src: videoSrc,
-      bitrate: transcodedVideo?.bitrate,
-      width: transcodedVideo?.meta.width,
-      height: transcodedVideo?.meta.height,
-      duration: transcodedVideo?.duration,
+      bitrate: transcodedVideo?.low?.bitrate,
+      width: transcodedVideo?.low.meta.width,
+      height: transcodedVideo?.low.meta.height,
+      duration: transcodedVideo?.low.duration,
     },
+    poster: poster
+      ? {
+          url: poster.url,
+          width: poster.meta.width,
+          height: poster.meta.height,
+        }
+      : null,
     thumbnail: thumbnail
       ? {
           url: thumbnail.url,

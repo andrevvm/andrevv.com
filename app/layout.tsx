@@ -21,7 +21,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <LayoutTop></LayoutTop>
-        <div className="fixed z-15 top-0 max-md:bg-[#00000066] backdrop-blur-lg left-0 pt-12 md:w-3/14">
+        <div className="fixed z-15 top-0 max-md:bg-overlay left-0 pt-8 md:w-3/14">
           <FadeChildren>{children}</FadeChildren>
         </div>
         <AllProjects projects={allProjects} />
