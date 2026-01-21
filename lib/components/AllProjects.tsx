@@ -67,9 +67,10 @@ function Scroller({ projects }: { projects: Project[] }) {
   useEffect(() => {
     const updateScrollState = () => {
       const scrollHeight = document.documentElement.scrollHeight
-      setScrollIndex(Math.round(scrollY / (window.innerHeight / divider)))
+      const docHeight = document.documentElement.offsetHeight
+      setScrollIndex(Math.round(scrollY / (docHeight / divider)))
       setScrollPer(scrollY / scrollHeight)
-      setScrollPerNext((scrollY + window.innerHeight / divider) / scrollHeight)
+      setScrollPerNext((scrollY + docHeight / divider) / scrollHeight)
     }
     window.requestAnimationFrame(updateScrollState)
   }, [scrollY, divider])
@@ -141,7 +142,9 @@ const ProjectThumbnail = ({
         duration: 1,
         ease: 'power2.out',
         onComplete: () => {
-          window.document.documentElement.style.scrollSnapType = ''
+          setTimeout(() => {
+            window.document.documentElement.style.scrollSnapType = ''
+          }, 100)
         },
       })
     },
