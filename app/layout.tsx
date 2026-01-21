@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import ProjectScroller from '@/lib/components/ProjectScroller'
 import AllProjects from '@/lib/components/AllProjects'
 import { getAllProjects } from '@/lib/api'
 import FadeChildren from '@/lib/components/FadeChildren'

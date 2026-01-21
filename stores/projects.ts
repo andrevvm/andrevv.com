@@ -50,8 +50,10 @@ export interface Project {
 
 export type ProjectsState = {
   selectedIndex: number
+  projectList: Project[]
 }
 
 export const useProjectsStore = create<ProjectsState>((set) => ({
   selectedIndex: 0,
+  projectList: [],
 }))
