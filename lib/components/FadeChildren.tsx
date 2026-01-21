@@ -7,5 +7,9 @@ export default function ChildrenWrapper({
 }: {
   children: React.ReactNode
 }) {
-  return <AnimatePresence initial={true}>{children}</AnimatePresence>
+  return (
+    <AnimatePresence initial={true} mode="wait">
+      {children}
+    </AnimatePresence>
+  )
 }

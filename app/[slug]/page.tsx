@@ -1,4 +1,4 @@
-import { getAllProjects, getProjectBySlug } from '@/lib/api'
+import { getProjectBySlug } from '@/lib/api'
 import ProjectPage from '@/lib/pages/project'
 import type { Project } from '@/stores/projects'
 import { Metadata } from 'next'
@@ -22,14 +22,6 @@ export async function generateMetadata({
           .join(' ')
       : null,
   }
-}
-
-export async function generateStaticParams() {
-  const allProjects = await getAllProjects(false)
-
-  return allProjects.map((project: Project) => ({
-    slug: project.slug,
-  }))
 }
 
 export default async function Project({
