@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import ProjectScroller from '@/lib/components/ProjectScroller'
+import AllProjects from '@/lib/components/AllProjects'
 import { getAllProjects } from '@/lib/api'
 import FadeChildren from '@/lib/components/FadeChildren'
 
@@ -19,7 +20,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <FadeChildren>{children}</FadeChildren>
-        <ProjectScroller projects={allProjects} />
+        <AllProjects projects={allProjects} />
       </body>
     </html>
   )

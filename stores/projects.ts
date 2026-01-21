@@ -1,5 +1,5 @@
 // src/stores/counter-store.ts
-import { create } from 'zustand';
+import { create } from 'zustand'
 import { TaskData } from '@/lib/videoHelper'
 
 export interface ProjectDescription {
@@ -12,7 +12,6 @@ export interface MediaItem {
   height: number
   contentType: string
 }
-
 
 export interface RoleItem {
   title: string
@@ -51,10 +50,8 @@ export interface Project {
 
 export type ProjectsState = {
   selectedIndex: number
-  projectList: Project[] | []
 }
 
 export const useProjectsStore = create<ProjectsState>((set) => ({
   selectedIndex: 0,
-  projectList: []
-}));
+}))

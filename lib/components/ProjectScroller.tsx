@@ -6,7 +6,7 @@ import { useMediaQuery } from 'usehooks-ts'
 import { getVideoAndThumbnail } from '../videoHelper'
 import Link from 'next/link'
 import { Project, RoleItem, useProjectsStore } from '@/stores/projects'
-import { useRouter, usePathname, useParams } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 
 const ProjectThumbnail = ({
   project,
@@ -114,17 +114,17 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
   const leftTransformRef = useRef<HTMLDivElement>(null)
   const rightTransformRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const index = Projects.findIndex((project) => project.slug === slug)
-    const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
-    console.log(index, item)
-    if (item) {
-      const rect = item.getBoundingClientRect()
-      const scrollX = isMobile ? 0 : window.scrollX + rect.left
-      const scrollY = isMobile ? window.scrollY + rect.top : 0
-      window.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' })
-    }
-  }, [Projects, slug, isMobile])
+  // useEffect(() => {
+  //   const index = Projects.findIndex((project) => project.slug === slug)
+  //   const item = scrollContainerRef.current?.querySelector(`#item-${index}`)
+  //   console.log(index, item)
+  //   if (item) {
+  //     const rect = item.getBoundingClientRect()
+  //     const scrollX = isMobile ? 0 : window.scrollX + rect.left
+  //     const scrollY = isMobile ? window.scrollY + rect.top : 0
+  //     window.scrollTo({ left: scrollX, top: scrollY, behavior: 'instant' })
+  //   }
+  // }, [Projects, slug, isMobile])
 
   const [scrollPer, setScrollPer] = useState(0)
   const [scrollPerNext, setScrollPerNext] = useState(0)
@@ -145,20 +145,6 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
     window.requestAnimationFrame(() => {
       setScrollPer(scrollPer)
       setScrollPerNext(scrollPerNext)
-      // if (leftTransformRef.current) {
-      //   if (isMobile) {
-      //     leftTransformRef.current.style.transform = `translateY(-${scrollPer * 100}%)`
-      //   } else {
-      //     leftTransformRef.current.style.transform = `translateX(-${scrollPer * 100}%)`
-      //   }
-      // }
-      // if (rightTransformRef.current) {
-      //   if (isMobile) {
-      //     rightTransformRef.current.style.transform = `translateY(-${scrollPerNext * 100}%)`
-      //   } else {
-      //     rightTransformRef.current.style.transform = `translateX(-${scrollPerNext * 100}%)`
-      //   }
-      // }
 
       useProjectsStore.setState({
         selectedIndex: Math.round(Projects.length * scrollPer),
@@ -189,10 +175,10 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <div className="md:hidden fixed top-0 left-0 z-20 p-4 leading-none">
+      <div className="fixed top-0 left-0 z-20 p-4 leading-none">
         <Link href="/">Andrew McCarthy</Link>
       </div>
-      <div className="fixed top-0 left-0 w-screen h-screen flex max-md:flex-col gap-1 z-10 items-center max-md:px-2">
+      <div className="fixed top-0 left-0 w-screen h-screen flex flex-col gap-1 z-10 items-center max-md:px-2">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: slug && !isMobile ? 0 : 1 }}
@@ -205,7 +191,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
               y: `-${isMobile ? scrollPer * 100 : 0}%`,
             }}
             transition={{ duration: 0.0, ease: 'circOut' }}
-            className="flex max-md:flex-col gap-0 relative max-md:top-[33.33vh] md:left-[25vw] translate-x-0"
+            className="flex flex-col gap-0 relative max-md:top-[33.33vh] md:left-[25vw] translate-x-0"
           >
             {Projects.map((project: Project, index: number) => (
               <ProjectThumbnail
@@ -252,7 +238,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
               x: `-${isMobile ? 0 : scrollPerNext * 100}%`,
               y: `-${isMobile ? scrollPerNext * 100 : 0}%`,
             }}
-            transition={{ duration: 0.1, ease: 'circOut' }}
+            transition={{ duration: 0, ease: 'circOut' }}
             className="flex max-md:flex-col gap-0 relative"
           >
             {projectList.map((project: Project, index: number) => (
@@ -267,7 +253,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         </motion.div>
       </div>
       <div
-        className="absolute z-5 top-0 left-0 max-md:w-screen md:h-screen flex max-md:flex-col md:flex-row"
+        className="absolute z-5 top-0 left-0 max-md:w-screen md:h-screen flex flex-col"
         ref={scrollContainerRef}
       >
         {projectList.map((_, index) => (
@@ -280,9 +266,7 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
         ))}
       </div>
       <div className="fixed bottom-0 max-md:h-30 pb-1 md:pb-4 max-md:bg-linear-to-b from-transparent to-60% to-background left-0 px-4 leading-none z-10 w-full flex gap-2 justify-between items-baseline-last pointer-events-none">
-        <div className="basis-1/3 max-md:hidden">
-          <Link href="/">Andrew McCarthy</Link>
-        </div>
+        <div className="basis-1/3 max-md:hidden"></div>
         {projectList.length > 0 && (
           <div className="text-xs whitespace-nowrap max-md:w-21 max-md:hidden">
             {selectedIndex + 1} / {projectList.length}

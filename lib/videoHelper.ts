@@ -74,7 +74,7 @@ export interface VideoThumbnailResult {
  * @returns Object containing video URL and thumbnail URL, or null if data is invalid
  */
 export function getVideoAndThumbnail(
-  taskData: TaskData | null | undefined
+  taskData: TaskData | null | undefined,
 ): VideoThumbnailResult | null {
   if (!taskData) {
     return null
@@ -103,7 +103,7 @@ export function getVideoAndThumbnail(
       (status) =>
         status.status === 'completed' &&
         status.videos &&
-        status.videos.length > 0
+        status.videos.length > 0,
     )
 
     if (completedStatus) {
