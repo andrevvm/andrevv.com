@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { type Project, useProjectsStore } from '@/stores/projects'
+import { type Project, RoleItem, useProjectsStore } from '@/stores/projects'
 import { useScrollState } from '@/stores/scroll'
 import { useEffect, useRef, useState } from 'react'
 import { getVideoAndThumbnail } from '@/lib/videoHelper'
@@ -158,6 +158,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
 
 export default function AllProjects({ projects }: { projects: Project[] }) {
   const { per, perNext } = useScrollState((state) => state)
+  const { selectedIndex } = useProjectsStore((state) => state)
   return (
     <>
       <div className="fixed w-screen h-screen flex flex-col">

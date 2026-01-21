@@ -175,9 +175,6 @@ export default function ProjectScroller({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <div className="fixed top-0 left-0 z-20 p-4 leading-none">
-        <Link href="/">Andrew McCarthy</Link>
-      </div>
       <div className="fixed top-0 left-0 w-screen h-screen flex flex-col gap-1 z-10 items-center max-md:px-2">
         <motion.div
           initial={{ opacity: 0 }}
