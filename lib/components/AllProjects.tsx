@@ -3,8 +3,9 @@
 import { motion } from 'framer-motion'
 import { type Project, useProjectsStore } from '@/stores/projects'
 import { useScrollState } from '@/stores/scroll'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getVideoAndThumbnail } from '@/lib/videoHelper'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -44,10 +45,15 @@ function Scroller({ projects }: { projects: Project[] }) {
     window.requestAnimationFrame(updateScrollState)
   }, [scrollY, divider])
 
+  const { slug } = useParams()
+  const router = useRouter()
   // update selected index on scroll index change
   useEffect(() => {
     useProjectsStore.setState({ selectedIndex: scrollIndex })
-  }, [scrollIndex])
+    if (slug) {
+      router.replace(`/${projects[scrollIndex].slug}`)
+    }
+  }, [scrollIndex, router])
 
   // update store
   useEffect(() => {
@@ -83,20 +89,6 @@ function Scroller({ projects }: { projects: Project[] }) {
   )
 }
 
-const handleThumbClick = (e: React.MouseEvent, index: number) => {
-  window.document.documentElement.style.scrollSnapType = 'none'
-  e.preventDefault()
-  gsap.to(window, {
-    scrollTo: `#scroller-${index}`,
-    overwrite: true,
-    duration: 1,
-    ease: 'power2.out',
-    onComplete: () => {
-      window.document.documentElement.style.scrollSnapType = ''
-    },
-  })
-}
-
 const ProjectThumbnail = ({
   project,
   index,
@@ -107,15 +99,33 @@ const ProjectThumbnail = ({
   const videoAndThumbnail = getVideoAndThumbnail(
     project.videosCollection.items[0]?.taskData || null,
   )
+  const { slug } = useParams()
+  const router = useRouter()
+
+  const handleThumbClick = useCallback(
+    (e: React.MouseEvent) => {
+      window.document.documentElement.style.scrollSnapType = 'none'
+
+      e.preventDefault()
+      gsap.to(window, {
+        scrollTo: `#scroller-${index}`,
+        overwrite: true,
+        duration: 1,
+        ease: 'power2.out',
+        onComplete: () => {
+          window.document.documentElement.style.scrollSnapType = ''
+        },
+      })
+    },
+    [slug, router, index],
+  )
   return (
     <Link
       href={`/${project.slug}`}
       className="aspect-video h-[12.4vh] w-auto flex-none pointer-events-auto cursor-pointer relative z-20"
       draggable={false}
       scroll={false}
-      onClick={(e) => {
-        handleThumbClick(e, index)
-      }}
+      onClick={handleThumbClick}
     >
       {project.videosCollection.items.map((video: any) => (
         <img
@@ -139,15 +149,16 @@ export const Thumbnails = ({
   top?: boolean
 }) => {
   const isMobile = useMediaQuery('(max-width: 768px)')
+  const topOffset = useMemo(() => {
+    return top ? (isMobile ? `37.5vh` : `25vh`) : '0'
+  }, [top, isMobile])
+
   return (
     <div className="flex-1 block overflow-hidden items-center">
       <motion.div
         className="relative flex flex-col overflow-hidden items-center"
-        animate={{ y: `-${per * 100}%` }}
+        animate={{ y: `-${per * 100}%`, top: topOffset }}
         transition={{ duration: 0 }}
-        style={{
-          top: top ? (isMobile ? `37.5vh` : `25vh`) : '0',
-        }}
       >
         {projects.map((project, idx) => (
           <ProjectThumbnail key={project.slug} project={project} index={idx} />
