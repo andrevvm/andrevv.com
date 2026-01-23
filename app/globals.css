@@ -49,7 +49,7 @@ body {
 }
 
 p {
-  @apply font-serif text-p;
+  @apply font-serif text-p leading-[1.3];
 }
 
 p + p {
