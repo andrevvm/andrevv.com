@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useParams, usePathname } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useMediaQuery } from 'usehooks-ts'
 
 export default function ChildrenWrapper({
@@ -15,6 +15,7 @@ export default function ChildrenWrapper({
     defaultValue: false,
     initializeWithValue: false,
   })
+  const router = useRouter()
   return (
     <motion.div
       animate={{
@@ -28,6 +29,11 @@ export default function ChildrenWrapper({
         width: { duration: 0 },
       }}
       className="fixed z-20 top-8 md:bottom-0 left-0 md:w-6/14 lg:w-4/14 xl:w-3/14"
+      onClick={() => {
+        if (pathname === '/info') {
+          router.push('/')
+        }
+      }}
     >
       <AnimatePresence initial={true} mode="wait">
         {children}

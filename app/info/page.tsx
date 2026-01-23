@@ -1,23 +1,9 @@
 'use client'
-import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useProjectsStore } from '@/stores/projects'
-import { useRouter } from 'next/navigation'
 
 export default function Info() {
   const { projectList } = useProjectsStore((state) => state)
-
-  const uniqueTypes = useMemo(() => {
-    return projectList
-      .map((project) => project.typeCollection.items)
-      .flat()
-      .filter(
-        (role, index, self) =>
-          self.findIndex((t) => t.title === role.title) === index,
-      )
-  }, [projectList])
-
-  const router = useRouter()
 
   return (
     <motion.div
@@ -26,9 +12,6 @@ export default function Info() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
       className="w-full h-screen top-0 p-4 font-serif normal-case text-pretty max-w-[30em]"
-      onClick={() => {
-        router.push('/')
-      }}
     >
       <div className="flex flex-col h-full justify-between pb-4">
         <article>

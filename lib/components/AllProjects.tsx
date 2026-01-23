@@ -251,6 +251,7 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
     initializeWithValue: false,
   })
   const pathname = usePathname()
+  const router = useRouter()
   return (
     <>
       <motion.div
