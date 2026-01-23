@@ -16,10 +16,10 @@ export default function Info() {
       <div className="flex flex-col h-full justify-between pb-4">
         <article>
           <p>
-            Design technologist based in San Diego with over 15 years of
+            Creative technologist based in San Diego with over 15 years of
             experience designing and building for the web.
           </p>
-          <p>Experimental spirit, pragmatist at heart.</p>
+          <p>Experimental spirit, pragmatic heart.</p>
           <p className="italic">
             <a
               href="mailto:hi@andrevv.com"
