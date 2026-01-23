@@ -19,6 +19,10 @@ export default function Info() {
             Creative technologist based in San Diego with over 15 years of
             experience designing and building for the web.
           </p>
+          <p>
+            Focus on creating impactful, engaging and memorable digital
+            experiences that are both delightful and functional.
+          </p>
           <p>Experimental spirit, pragmatic heart.</p>
           <p className="italic">
             <a
