@@ -274,7 +274,7 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
           initial={{ height: '50%' }}
           transition={{ duration: 0.5, ease: 'anticipate' }}
           animate={{ height: slug ? '75%' : '50%' }}
-          className="max-md:basis-1/4 flex justify-center py-1 max-w-full"
+          className="max-md:basis-3/11 flex justify-center py-1 max-w-full"
         >
           <div className="aspect-video h-full w-auto relative">
             {projects.map((project, idx) => (
