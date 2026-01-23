@@ -32,14 +32,15 @@ export default function Info() {
           </p>
         </article>
         <ul className="py-4 font-mono lowercase">
+          <li>Craft CMS</li>
+          <li>Next.js</li>
+          <li>React</li>
+          <li>Sanity CMS</li>
+          <li>Shopify</li>
           <li>Sveltekit</li>
           <li>Tailwind CSS</li>
-          <li>Shopify</li>
-          <li>React</li>
           <li>Three.js</li>
-          <li>Next.js</li>
-          <li>Craft CMS</li>
-          <li>Sanity CMS</li>
+          <li>Vue.js</li>
         </ul>
       </div>
     </motion.div>

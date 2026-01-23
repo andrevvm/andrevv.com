@@ -1,6 +1,7 @@
 'use client'
 import { Project, TypeItem } from '@/stores/projects'
 import { motion } from 'framer-motion'
+import { renderContentfulRichText } from '@/lib/contentfulRichText'
 
 export default function ProjectPage({ project }: { project: Project }) {
   return (
@@ -16,14 +17,7 @@ export default function ProjectPage({ project }: { project: Project }) {
         ))}
       </ul>
 
-      {Array.isArray(project?.description?.json?.content) &&
-        project.description.json.content.map(
-          (content: { content: Array<{ value: string }> }, index: number) => (
-            <p className="leading-[1.2] normal-case" key={index}>
-              {content.content.map((item: { value: string }) => item.value)}
-            </p>
-          ),
-        )}
+      {renderContentfulRichText(project?.description?.json)}
     </motion.div>
   )
 }
