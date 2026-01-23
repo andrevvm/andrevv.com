@@ -252,6 +252,12 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
   })
   const pathname = usePathname()
   const router = useRouter()
+
+  // Initialize store with projects on client side
+  useEffect(() => {
+    useProjectsStore.setState({ projectList: projects })
+  }, [projects])
+
   return (
     <>
       <motion.div

@@ -3,8 +3,6 @@ import { motion } from 'framer-motion'
 import { useProjectsStore } from '@/stores/projects'
 
 export default function Info() {
-  const { projectList } = useProjectsStore((state) => state)
-
   return (
     <motion.div
       key="info"
