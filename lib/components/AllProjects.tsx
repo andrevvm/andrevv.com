@@ -164,7 +164,7 @@ const ProjectThumbnail = ({
       {project.videosCollection.items.map((video: any) => (
         <img
           className="rounded-sm object-cover w-full h-full border-2 border-transparent hover:border-accent"
-          key={video.taskData.videoSrc}
+          key={videoAndThumbnail?.thumbnail?.url}
           src={videoAndThumbnail?.thumbnail?.url}
           draggable={false}
         />

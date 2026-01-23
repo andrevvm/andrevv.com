@@ -2,6 +2,7 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useProjectsStore } from '@/stores/projects'
+import { useRouter } from 'next/navigation'
 
 export default function Info() {
   const { projectList } = useProjectsStore((state) => state)
@@ -16,6 +17,8 @@ export default function Info() {
       )
   }, [projectList])
 
+  const router = useRouter()
+
   return (
     <motion.div
       key="info"
@@ -23,16 +26,26 @@ export default function Info() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
       className="w-full h-screen top-0 p-4 font-serif normal-case text-pretty max-w-[30em]"
+      onClick={() => {
+        router.push('/')
+      }}
     >
       <div className="flex flex-col h-full justify-between pb-4">
         <article>
           <p>
-            Creative developer based in San Diego with over 15 years of
+            Design technologist based in San Diego with over 15 years of
             experience designing and building for the web.
           </p>
           <p>Experimental spirit, pragmatist at heart.</p>
           <p className="italic">
-            <a href="mailto:hi@andrevv.com">hi@andrevv.com</a>
+            <a
+              href="mailto:hi@andrevv.com"
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+            >
+              hi@andrevv.com
+            </a>
           </p>
         </article>
         <ul className="py-4 font-mono lowercase">

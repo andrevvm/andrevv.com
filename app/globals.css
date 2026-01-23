@@ -41,9 +41,7 @@ body {
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  @apply font-mono;
+  @apply font-mono bg-background text-foreground;
   text-transform: lowercase;
   letter-spacing: 0.05em;
 }

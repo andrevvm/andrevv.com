@@ -131,8 +131,8 @@ export function getVideoAndThumbnail(
   }
 
   // Prefer transcoded video if available, otherwise fall back to original
-  const url540 = transcodedVideo?.low?.url || originalVideoSrc
-  const url1080 = transcodedVideo?.high?.url || originalVideoSrc
+  const url540 = transcodedVideo?.low?.url
+  const url1080 = transcodedVideo?.high?.url
   const videoSrc = originalVideoSrc.startsWith('//')
     ? `https:${originalVideoSrc}`
     : originalVideoSrc

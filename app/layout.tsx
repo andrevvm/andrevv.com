@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: 'Creative Developer in San Diego, CA',
 }
 
+export const revalidate = 60
+
 export default async function RootLayout({
   children,
 }: Readonly<{
