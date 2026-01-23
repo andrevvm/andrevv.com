@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Creative Developer in San Diego, CA',
 }
 
-export const revalidate = 60 * 60 * 24 * 30
+export const revalidate = 1000000
 
 export default async function RootLayout({
   children,
