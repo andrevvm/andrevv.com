@@ -17,11 +17,16 @@ export default function LayoutTop() {
         className="pointer-events-auto"
         onClick={() => {
           if (pathname === '/') {
-            console.log('scroll to 0')
+            window.document.documentElement.style.scrollSnapType = 'none'
             gsap.to(window, {
               scrollTo: 0,
               duration: 1,
               ease: 'power2.out',
+              onComplete: () => {
+                setTimeout(() => {
+                  window.document.documentElement.style.scrollSnapType = ''
+                }, 100)
+              },
             })
           }
         }}
