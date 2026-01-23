@@ -5,7 +5,7 @@ import { type Project, useProjectsStore } from '@/stores/projects'
 import { useScrollState } from '@/stores/scroll'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getVideoAndThumbnail } from '@/lib/videoHelper'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -22,7 +22,10 @@ function Scroller({ projects }: { projects: Project[] }) {
   const [scrollPerNext, setScrollPerNext] = useState(0)
   const [scrollIndex, setScrollIndex] = useState(0)
   const [hasInteracted, setHasInteracted] = useState(false)
-  const isMobile = useMediaQuery('(max-width: 768px)')
+  const isMobile = useMediaQuery('(max-width: 768px)', {
+    defaultValue: false,
+    initializeWithValue: false,
+  })
   const { slug } = useParams()
   const router = useRouter()
 
@@ -179,11 +182,14 @@ export const Thumbnails = ({
   projects: Project[]
   top?: boolean
 }) => {
-  const isMobile = useMediaQuery('(max-width: 768px)')
+  const isMobile = useMediaQuery('(max-width: 768px)', {
+    defaultValue: false,
+    initializeWithValue: false,
+  })
   const { slug } = useParams()
   const topOffset = useMemo(() => {
     return top ? (isMobile ? `37.5vh` : slug ? `12.5vh` : `25vh`) : '0'
-  }, [top, isMobile])
+  }, [top, isMobile, slug])
 
   return (
     <div className="flex-1 block overflow-hidden items-center">
@@ -240,15 +246,20 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
 export default function AllProjects({ projects }: { projects: Project[] }) {
   const { per, perNext } = useScrollState((state) => state)
   const { slug } = useParams()
-  const isMobile = useMediaQuery('(max-width: 768px)')
+  const isMobile = useMediaQuery('(max-width: 768px)', {
+    defaultValue: false,
+    initializeWithValue: false,
+  })
+  const pathname = usePathname()
   return (
     <>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{
           width: `${slug && !isMobile ? (11 / 14) * 100 : (8 / 14) * 100}%`,
-          filter: slug && isMobile ? 'blur(10px)' : 'none',
-          opacity: slug && isMobile ? 0.8 : 1,
+          filter:
+            (slug && isMobile) || pathname === '/info' ? 'blur(10px)' : 'none',
+          opacity: (slug && isMobile) || pathname === '/info' ? 0.8 : 1,
         }}
         transition={{
           duration: 0.5,

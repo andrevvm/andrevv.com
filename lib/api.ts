@@ -11,17 +11,18 @@ const PROJECT_INDEX_FIELDS = `
       taskData
     }
   } 
+  typeCollection {
+    items {
+      title
+    }
+  }
 `
 
 const PROJECT_DETAIL_FIELDS = `
   description {
     json
   }
-  typeCollection {
-    items {
-      title
-    }
-  }
+  
 `
 
 async function fetchGraphQL(query: string, preview = false): Promise<any> {
@@ -39,7 +40,7 @@ async function fetchGraphQL(query: string, preview = false): Promise<any> {
       },
       body: JSON.stringify({ query }),
       next: { tags: ['projects'] },
-    }
+    },
   ).then((response) => response.json())
 }
 
@@ -51,7 +52,10 @@ function extractProjectEntries(fetchResponse: any): any[] {
   return fetchResponse?.data?.projectCollection?.items
 }
 
-export async function getProjectBySlug(slug: string | null, isDraftMode: boolean): Promise<any> {
+export async function getProjectBySlug(
+  slug: string | null,
+  isDraftMode: boolean,
+): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
       projectCollection(where: { slug: "${slug}" }, preview: ${
@@ -63,7 +67,7 @@ export async function getProjectBySlug(slug: string | null, isDraftMode: boolean
         }
       }
     }`,
-    isDraftMode
+    isDraftMode,
   )
   return extractProject(entry)
 }
@@ -71,7 +75,7 @@ export async function getProjectBySlug(slug: string | null, isDraftMode: boolean
 export async function getAllProjects(isDraftMode: boolean): Promise<any[]> {
   const entries = await fetchGraphQL(
     `query {
-      projectCollection(limit: 50,where: { title_exists: true }, order: date_DESC, preview: ${
+      projectCollection(limit: 30,where: { title_exists: true }, order: date_DESC, preview: ${
         isDraftMode ? 'true' : 'false'
       }) {
         items {
@@ -79,7 +83,7 @@ export async function getAllProjects(isDraftMode: boolean): Promise<any[]> {
         }
       }
     }`,
-    isDraftMode
+    isDraftMode,
   )
   return extractProjectEntries(entries)
 }
