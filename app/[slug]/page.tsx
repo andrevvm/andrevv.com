@@ -2,7 +2,7 @@ import { getProjectBySlug } from '@/lib/api'
 import ProjectPage from '@/lib/pages/project'
 import type { Project } from '@/stores/projects'
 import { Metadata } from 'next'
-// export const revalidate = 60
+export const revalidate = 60
 
 export async function generateMetadata({
   params,
