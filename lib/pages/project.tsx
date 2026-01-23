@@ -8,7 +8,7 @@ export default function ProjectPage({ project }: { project: Project }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="text-pretty p-4 leading-none max-md:pb-6"
+      className="text-pretty p-4 leading-none max-md:pb-8"
     >
       <ul className="mb-4">
         {project?.typeCollection?.items.map((type: TypeItem) => (

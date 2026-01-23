@@ -188,7 +188,7 @@ export const Thumbnails = ({
   return (
     <div className="flex-1 block overflow-hidden items-center">
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 0, top: topOffset }}
         className="relative flex flex-col overflow-hidden items-center"
         animate={{ y: `-${per * 100}%`, top: topOffset, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'circOut' }}
@@ -228,7 +228,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
         poster={
           videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
         }
-        className="absolute left-1/2 -translate-x-1/2 h-full w-auto object-cover rounded-sm"
+        className="absolute left-1/2 -translate-x-1/2 h-full w-auto max-w-full object-cover rounded-sm"
         muted
         playsInline
         loop
@@ -255,16 +255,16 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
           ease: 'anticipate',
           filter: { duration: 0.5, ease: 'easeInOut' },
         }}
-        className="fixed left-3/14 h-screen w-8/14 flex flex-col items-center"
+        className="fixed left-3/14 lg:left-3/14 h-screen w-8/14 flex flex-col items-center"
       >
         <Thumbnails top={true} per={per} projects={projects} />
         <motion.div
           initial={{ height: '50%' }}
           transition={{ duration: 0.5, ease: 'anticipate' }}
           animate={{ height: slug ? '75%' : '50%' }}
-          className="max-md:basis-1/4 flex justify-center py-1"
+          className="max-md:basis-1/4 flex justify-center py-1 max-w-full"
         >
-          <div className="aspect-video h-full w-auto  relative">
+          <div className="aspect-video h-full w-auto relative">
             {projects.map((project, idx) => (
               <Video key={project.slug} project={project} idx={idx} />
             ))}
