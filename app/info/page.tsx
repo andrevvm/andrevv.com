@@ -14,7 +14,7 @@ export default function Info() {
       <div className="flex flex-col h-full justify-between pb-4">
         <article>
           <p>
-            Creative technologist based in San Diego with over 15 years of
+            Creative technologist based in San Diego with over 10 years of
             experience designing and building for the web.
           </p>
           <p>
