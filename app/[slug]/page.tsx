@@ -22,6 +22,13 @@ export async function generateMetadata({
   const { slug } = await params
   const project: Project = await getProjectBySlug(slug, false)
 
+  if (!project) {
+    return {
+      title: 'Project not found',
+      description: 'Project not found',
+    }
+  }
+
   return {
     title: `${project.title} — Andrew McCarthy`,
     description: Array.isArray(project.description?.json?.content)
