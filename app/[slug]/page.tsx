@@ -3,6 +3,7 @@ import ProjectPage from '@/lib/pages/project'
 import type { Project } from '@/stores/projects'
 import { Metadata } from 'next'
 export const revalidate = 1000000
+import { redirect } from 'next/navigation'
 
 export async function generateStaticParams({
   params,
@@ -40,5 +41,8 @@ export default async function Project({
 }) {
   const { slug } = await params
   const project: Project = await getProjectBySlug(slug, false)
+  if (!project) {
+    redirect('/')
+  }
   return <ProjectPage key={project.slug} project={project} />
 }
