@@ -102,11 +102,22 @@ function Scroller({ projects }: { projects: Project[] }) {
         <div
           key={project.slug}
           id={`scroller-${idx}`}
-          className="w-screen flex-none flex items-end px-4 snap-start "
+          className="relative w-screen flex-none flex flex-col items-end justify-end p-4 snap-start leading-none gap-0.5"
           style={{
             height: `${100 / divider}%`,
           }}
-        ></div>
+        >
+          <h1 className="max-md:hidden m-0">
+            <Link href={project.slug}>{project.title}</Link>
+          </h1>
+          <h2 className="max-md:hidden m-0">
+            <Link href={project.slug}>
+              {project.roleCollection.items
+                .map((role) => role.title)
+                .join(', ')}
+            </Link>
+          </h2>
+        </div>
       ))}
       {Array.from({ length: divider - 1 }).map((_, index) => (
         <div
