@@ -46,14 +46,14 @@ function Scroller({ projects }: { projects: Project[] }) {
       () => {
         setHasInteracted(true)
       },
-      { once: true },
+      { once: true }
     )
     window.addEventListener(
       'scroll',
       () => {
         setHasInteracted(true)
       },
-      { once: true },
+      { once: true }
     )
   }, [])
 
@@ -98,16 +98,33 @@ function Scroller({ projects }: { projects: Project[] }) {
 
   return (
     <div className="flex flex-col gap-0 h-screen">
-      {projects.map((project, idx) => (
-        <div
-          key={project.slug}
-          id={`scroller-${idx}`}
-          className="w-screen flex-none flex items-end px-4 snap-start "
-          style={{
-            height: `${100 / divider}%`,
-          }}
-        ></div>
-      ))}
+      {projects.map((project, idx: number) => {
+        const isActive = idx === scrollIndex
+
+        return (
+          <motion.div
+            key={project.slug}
+            id={`scroller-${idx}`}
+            className="relative w-screen pointer-events-none flex-none flex flex-col items-end justify-end p-4 snap-start leading-none gap-0.5"
+            style={{
+              height: `${100 / divider}%`,
+            }}
+            animate={{ opacity: isActive ? 1 : 0.1 }}
+            transition={{ duration: 0.5, ease: 'anticipate' }}
+          >
+            <h1 className="max-md:hidden m-0 pointer-events-auto">
+              <Link href={project.slug}>{project.title}</Link>
+            </h1>
+            <h2 className="max-md:hidden m-0 pointer-events-auto">
+              <Link href={project.slug}>
+                {project.roleCollection.items
+                  .map((role) => role.title)
+                  .join(', ')}
+              </Link>
+            </h2>
+          </motion.div>
+        )
+      })}
       {Array.from({ length: divider - 1 }).map((_, index) => (
         <div
           key={index}
@@ -129,7 +146,7 @@ const ProjectThumbnail = ({
   index: number
 }) => {
   const videoAndThumbnail = getVideoAndThumbnail(
-    project.videosCollection.items[0]?.taskData || null,
+    project.videosCollection.items[0]?.taskData || null
   )
   const { slug } = useParams()
   const router = useRouter()
@@ -151,7 +168,7 @@ const ProjectThumbnail = ({
         },
       })
     },
-    [slug, router, index],
+    [slug, router, index]
   )
   return (
     <Link
@@ -211,7 +228,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
   const selectedIndex = useProjectsStore((state) => state.selectedIndex)
   const videoRef = useRef<HTMLVideoElement>(null)
   const videoAndThumbnail = getVideoAndThumbnail(
-    project.videosCollection.items[0]?.taskData || null,
+    project.videosCollection.items[0]?.taskData || null
   )
   useEffect(() => {
     if (selectedIndex === idx) {

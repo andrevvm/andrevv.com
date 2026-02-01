@@ -18,7 +18,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         transition={{ duration: 0.5, ease: 'anticipate' }}
         className="max-md:hidden"
       ></motion.div>
-      <div className="flex-1 flex flex-col items-center md:items-end justify-end max-md:gap-y-1">
+      <div className="md:hidden flex-1 flex flex-col items-center md:items-end justify-end max-md:gap-y-1">
         {projects[selectedIndex] && (
           <>
             <div className="flex-1 flex justify-center items-end">
