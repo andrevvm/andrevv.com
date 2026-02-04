@@ -251,7 +251,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
         poster={
           videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
         }
-        className="absolute left-1/2 -translate-x-1/2 h-full w-auto max-w-full object-cover rounded-sm"
+        className="absolute left-1/2 -translate-x-1/2 h-full w-auto object-cover rounded-sm"
         muted
         playsInline
         loop
@@ -299,7 +299,7 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
           animate={{ height: slug ? '75%' : '50%' }}
           className="max-md:basis-3/11 flex justify-center py-1 max-w-full"
         >
-          <div className="aspect-video h-full w-auto relative">
+          <div className="aspect-16/8 h-full w-auto relative">
             {projects.map((project, idx) => (
               <Video key={project.slug} project={project} idx={idx} />
             ))}
