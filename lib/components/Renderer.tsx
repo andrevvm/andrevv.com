@@ -1,7 +1,9 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrthographicCamera, useFBO } from '@react-three/drei'
+import { OrthographicCamera, AsciiRenderer, useFBO } from '@react-three/drei'
+import { useParams } from 'next/navigation'
+import { motion } from 'framer-motion'
 import {
   VideoTexture,
   Scene,
@@ -14,6 +16,11 @@ import {
   CanvasTexture,
 } from 'three'
 import { useProjectsStore } from '@/stores/projects'
+
+const isChrome =
+  typeof navigator !== 'undefined' &&
+  /Chrome/.test(navigator.userAgent) &&
+  !/Edg/.test(navigator.userAgent)
 
 const meltVertexShader = `
   varying vec2 vUv;
@@ -56,7 +63,7 @@ const decayFragmentShader = `
     col.rgb = mix(vec3(gray), col.rgb + uDecay * 0.0025, 1.005 + uDecay*0.01);
 
     // Restore contrast — push away from mid-gray
-    col.rgb = (col.rgb - uDecay * 0.035) * 1.017 + 0.025;
+    col.rgb = (col.rgb - uDecay * 0.035) * 1.03 + 0.025;
 
     gl_FragColor = col;
   }
@@ -224,7 +231,7 @@ const Video = () => {
   if (!texture) return null
 
   return (
-    <mesh position={[0, 0, 0]}>
+    <mesh>
       <planeGeometry args={[size.width, size.height]} />
       <meshBasicMaterial ref={materialRef} toneMapped={false} />
     </mesh>
@@ -311,13 +318,30 @@ const ThreeScene = () => {
     return window.innerWidth < 768 ? 0.064 : 0.0375
   }, [size])
 
+  const video = useProjectsStore((store) => store.video)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    video?.addEventListener('play', () => setMounted(false))
+  })
+
   return (
     <>
-      <GpuAsciiEffect
-        characters="  ❍✫✧❀✿ "
-        resolution={resolution}
-        renderIndex={1}
-      />
+      {mounted && isChrome ? (
+        <AsciiRenderer
+          renderIndex={1}
+          characters="  ❍✫✧❀✿ "
+          color={true}
+          bgColor="transparent"
+          resolution={resolution * 2}
+        />
+      ) : (
+        <GpuAsciiEffect
+          characters="  ❍✫✧❀✿ "
+          resolution={resolution}
+          renderIndex={1}
+        />
+      )}
       <OrthographicCamera makeDefault position={[0, 0, 10]} />
       <Video />
     </>
@@ -326,12 +350,18 @@ const ThreeScene = () => {
 
 const Renderer = () => {
   const [dpr, setDpr] = useState(2)
+  const { slug } = useParams()
+
   return (
-    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 h-screen w-auto aspect-video">
+    <motion.div
+      animate={{ opacity: slug ? 0 : 1 }}
+      transition={{ duration: 1.25, ease: 'circInOut' }}
+      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5 h-screen w-auto aspect-video"
+    >
       <Canvas dpr={dpr}>
         <ThreeScene />
       </Canvas>
-    </div>
+    </motion.div>
   )
 }
 

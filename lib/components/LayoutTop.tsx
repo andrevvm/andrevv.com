@@ -11,10 +11,10 @@ export default function LayoutTop() {
   const pathname = usePathname()
 
   return (
-    <div className="fixed top-0 left-0 z-20 py-6 px-6 md:py-12 md:px-9.75 leading-none flex justify-between w-full pointer-events-none">
+    <div className="fixed top-0 left-0 z-35 py-6 px-6 md:py-12 md:px-9.75 leading-none flex justify-between w-full pointer-events-none">
       <Link
         href="/"
-        className="pointer-events-auto py-0.5 px-3 bg-background"
+        className="pointer-events-auto py-0.5 px-3 bg-background rounded-sm"
         onClick={() => {
           if (pathname === '/') {
             window.document.documentElement.style.scrollSnapType = 'none'

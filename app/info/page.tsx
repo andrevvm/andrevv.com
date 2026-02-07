@@ -1,6 +1,5 @@
 'use client'
 import { motion } from 'framer-motion'
-import { useProjectsStore } from '@/stores/projects'
 
 export default function Info() {
   return (
@@ -9,7 +8,7 @@ export default function Info() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
-      className="w-full h-screen top-0 p-4 font-serif normal-case text-pretty max-w-[30em]"
+      className="w-full h-screen top-0 pt-30 px-9 md:px-12.75 font-serif normal-case text-pretty max-w-[30em]"
     >
       <div className="flex flex-col h-full justify-between pb-4">
         <article>
@@ -33,8 +32,9 @@ export default function Info() {
             </a>
           </p>
         </article>
-        <ul className="py-4 font-mono lowercase">
+        <ul className="py-4 pb-10 font-mono lowercase">
           <li>Craft CMS</li>
+          <li>Hydrogen</li>
           <li>Next.js</li>
           <li>React</li>
           <li>Sanity CMS</li>
@@ -42,7 +42,6 @@ export default function Info() {
           <li>Sveltekit</li>
           <li>Tailwind CSS</li>
           <li>Three.js</li>
-          <li>Vue.js</li>
         </ul>
       </div>
     </motion.div>

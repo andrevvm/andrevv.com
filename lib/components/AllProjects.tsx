@@ -110,9 +110,13 @@ function Scroller({ projects }: { projects: Project[] }) {
             }}
             transition={{ duration: 0.5, ease: 'anticipate' }}
           >
-            <div className="h-1/3">
+            <motion.div
+              initial={{ maxHeight: '0%' }}
+              animate={{ maxHeight: slug ? '82.5%' : '50%' }}
+              className="w-full"
+            >
               <Video key={project.slug} project={project} idx={idx} />
-            </div>
+            </motion.div>
           </motion.div>
         )
       })}
@@ -239,7 +243,10 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
   const { slug } = useParams()
   return (
     <>
-      <Link href={`/${slug ? '/' : project.slug}`}>
+      <Link
+        href={`/${slug ? '/' : project.slug}`}
+        className="pointer-events-auto h-full flex items-center justify-center"
+      >
         <video
           ref={videoRef}
           src={
@@ -249,7 +256,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
             videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
           }
           crossOrigin="anonymous"
-          className="h-full w-auto object-contain rounded-sm"
+          className="h-full w-auto m-auto object-contain object-center rounded-sm bg-background border-background border-15"
           muted
           playsInline
           loop
