@@ -110,7 +110,7 @@ function Scroller({ projects }: { projects: Project[] }) {
             }}
             transition={{ duration: 0.5, ease: 'anticipate' }}
           >
-            <div className="h-1/4">
+            <div className="h-1/3">
               <Video key={project.slug} project={project} idx={idx} />
             </div>
           </motion.div>
