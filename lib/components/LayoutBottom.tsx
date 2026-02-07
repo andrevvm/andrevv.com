@@ -1,40 +1,52 @@
 'use client'
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Project, RoleItem, useProjectsStore } from '@/stores/projects'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
+import { useAsciiScramble } from '@/lib/hooks/useAsciiScramble'
 
 export default function LayoutBottom({ projects }: { projects: Project[] }) {
   const { selectedIndex } = useProjectsStore((state) => state)
   const { slug } = useParams()
   const pathname = usePathname()
+
+  const project = projects[selectedIndex]
+  const title = useAsciiScramble(project?.title ?? '')
+  const roles = useMemo(
+    () =>
+      project?.roleCollection.items
+        .map((role: RoleItem) => role.title)
+        .join(', ') ?? '',
+    [project]
+  )
+  const rolesDisplay = useAsciiScramble(roles)
+
   return (
     <motion.div
       animate={{ opacity: pathname === '/info' ? 0 : 1 }}
       className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-5 md:p-13.25 leading-none bg-none flex items-end justify-end gap-y-2"
     >
       <div className="flex-1 flex flex-col items-center justify-end">
-        {projects[selectedIndex] && (
+        {project && (
           <>
             <div className="flex-1 flex justify-center items-end">
               <Link
-                href={`/${projects[selectedIndex]?.slug}`}
+                href={`/${project.slug}`}
                 className="pointer-events-auto bg-background rounded-sm py-1.5 px-3"
               >
-                {projects[selectedIndex]?.title}
+                {title}
               </Link>
             </div>
           </>
         )}
         <div className="flex justify-end text-right">
-          {projects[selectedIndex] && (
+          {project && (
             <Link
-              href={`/${projects[selectedIndex]?.slug}`}
+              href={`/${project.slug}`}
               className="pointer-events-auto bg-background rounded-sm py-1.5 px-3"
             >
-              {projects[selectedIndex]?.roleCollection.items
-                .map((role: RoleItem) => role.title)
-                .join(', ')}
+              {rolesDisplay}
             </Link>
           )}
         </div>

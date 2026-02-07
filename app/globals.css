@@ -28,6 +28,8 @@
   --text-base: 10px;
   --text-p: 15px;
   --text-md: 1.7rem;
+
+  --shadow-lg: 0 0 40px var(--dark), 0 0 40px var(--dark);
 }
 
 html {

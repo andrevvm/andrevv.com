@@ -111,9 +111,9 @@ function Scroller({ projects }: { projects: Project[] }) {
             transition={{ duration: 0.5, ease: 'anticipate' }}
           >
             <motion.div
-              initial={{ maxHeight: '0%' }}
-              animate={{ maxHeight: slug ? '82.5%' : '50%' }}
-              className="w-full"
+              initial={{ width: '0%' }}
+              animate={{ width: slug || isMobile ? '82.5%' : '33%' }}
+              className="h-auto aspect-video"
             >
               <Video key={project.slug} project={project} idx={idx} />
             </motion.div>
@@ -246,6 +246,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
       <Link
         href={`/${slug ? '/' : project.slug}`}
         className="pointer-events-auto h-full flex items-center justify-center"
+        key={slug as string}
       >
         <video
           ref={videoRef}
@@ -256,7 +257,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
             videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
           }
           crossOrigin="anonymous"
-          className="h-full w-auto m-auto object-contain object-center rounded-sm bg-background border-background border-15"
+          className="h-full w-auto m-auto object-contain object-center rounded-sm shadow-background shadow-lg"
           muted
           playsInline
           loop

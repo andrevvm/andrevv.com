@@ -231,7 +231,7 @@ const Video = () => {
   if (!texture) return null
 
   return (
-    <mesh>
+    <mesh position={[-100, 0, 0]}>
       <planeGeometry args={[size.width, size.height]} />
       <meshBasicMaterial ref={materialRef} toneMapped={false} />
     </mesh>
@@ -327,7 +327,7 @@ const ThreeScene = () => {
 
   return (
     <>
-      {mounted && isChrome ? (
+      {isChrome ? (
         <AsciiRenderer
           renderIndex={1}
           characters="  ❍✫✧❀✿ "
@@ -354,6 +354,7 @@ const Renderer = () => {
 
   return (
     <motion.div
+      initial={{ opacity: 0 }}
       animate={{ opacity: slug ? 0 : 1 }}
       transition={{ duration: 1.25, ease: 'circInOut' }}
       className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5 h-screen w-auto aspect-video"
