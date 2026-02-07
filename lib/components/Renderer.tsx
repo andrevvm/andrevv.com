@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrthographicCamera, AsciiRenderer, useFBO } from '@react-three/drei'
 import {
@@ -164,7 +164,7 @@ const ThreeScene = () => {
   const { size } = useThree()
 
   const resolution = useMemo(() => {
-    return size.width < 768 ? 0.08 : 0.05
+    return size.width < 768 ? 0.04 : 0.075
   }, [size.width])
 
   return (
@@ -175,7 +175,6 @@ const ThreeScene = () => {
           characters="  ❍✧✳❀✿ "
           color={true}
           bgColor="transparent"
-          fgColor="red"
           resolution={resolution}
         />
       )}
@@ -187,9 +186,10 @@ const ThreeScene = () => {
 }
 
 const Renderer = () => {
+  const [dpr, setDpr] = useState(0.5)
   return (
     <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 h-screen w-auto aspect-video">
-      <Canvas>
+      <Canvas dpr={dpr}>
         <ThreeScene />
       </Canvas>
     </div>
