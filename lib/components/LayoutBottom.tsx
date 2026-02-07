@@ -11,20 +11,20 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
   return (
     <motion.div
       animate={{ opacity: pathname === '/info' ? 0 : 1 }}
-      className="fixed bottom-0 pointer-events-none left-0 w-full z-20 p-4 leading-none max-md:bg-linear-to-t from-background to-transparent from-30% h-50 flex items-end justify-end gap-y-2"
+      className="fixed bottom-0 pointer-events-none left-0 w-full z-20 p-5 md:p-13.25 leading-none bg-none flex items-end justify-end gap-y-2"
     >
       <motion.div
         animate={{ width: `${slug ? (3 / 14) * 100 : 0}%` }}
         transition={{ duration: 0.5, ease: 'anticipate' }}
         className="max-md:hidden"
       ></motion.div>
-      <div className="md:hidden flex-1 flex flex-col items-center md:items-end justify-end max-md:gap-y-1">
+      <div className="flex-1 flex flex-col items-center justify-end bg-back">
         {projects[selectedIndex] && (
           <>
             <div className="flex-1 flex justify-center items-end">
               <Link
                 href={`/${projects[selectedIndex]?.slug}`}
-                className="pointer-events-auto"
+                className="pointer-events-auto bg-background py-1.5 px-3"
               >
                 {projects[selectedIndex]?.title}
               </Link>
@@ -35,7 +35,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
           {projects[selectedIndex] && (
             <Link
               href={`/${projects[selectedIndex]?.slug}`}
-              className="pointer-events-auto"
+              className="pointer-events-auto bg-background py-1.5 px-3"
             >
               {projects[selectedIndex]?.roleCollection.items
                 .map((role: RoleItem) => role.title)

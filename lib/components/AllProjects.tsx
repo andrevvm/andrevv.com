@@ -11,6 +11,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import ScrollToPlugin from 'gsap/ScrollToPlugin'
 import { useMediaQuery } from 'usehooks-ts'
+import Renderer from './Renderer'
 
 gsap.registerPlugin(useGSAP)
 gsap.registerPlugin(ScrollToPlugin)
@@ -99,29 +100,19 @@ function Scroller({ projects }: { projects: Project[] }) {
   return (
     <div className="flex flex-col gap-0 h-screen">
       {projects.map((project, idx: number) => {
-        const isActive = idx === scrollIndex
-
         return (
           <motion.div
             key={project.slug}
             id={`scroller-${idx}`}
-            className="relative w-screen pointer-events-none flex-none flex flex-col items-end justify-end p-4 snap-start leading-none gap-0.5"
+            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center p-4 snap-start leading-none gap-0.5"
             style={{
               height: `${100 / divider}%`,
             }}
-            animate={{ opacity: isActive ? 1 : 0.1 }}
             transition={{ duration: 0.5, ease: 'anticipate' }}
           >
-            <h1 className="max-md:hidden m-0 pointer-events-auto">
-              <Link href={project.slug}>{project.title}</Link>
-            </h1>
-            <h2 className="max-md:hidden m-0 pointer-events-auto">
-              <Link href={project.slug}>
-                {project.roleCollection.items
-                  .map((role) => role.title)
-                  .join(', ')}
-              </Link>
-            </h2>
+            <div className="h-1/4">
+              <Video key={project.slug} project={project} idx={idx} />
+            </div>
           </motion.div>
         )
       })}
@@ -230,46 +221,45 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
   const videoAndThumbnail = getVideoAndThumbnail(
     project.videosCollection.items[0]?.taskData || null
   )
+
   useEffect(() => {
     if (selectedIndex === idx) {
-      videoRef.current?.play().catch((error) => {
-        console.warn('Error playing video:', error)
-      })
+      videoRef.current
+        ?.play()
+        .catch((error) => {
+          console.warn('Error playing video:', error)
+        })
+        .then(() => {
+          useProjectsStore.setState({ video: videoRef.current })
+        })
     } else {
-      videoRef.current?.pause()
+      if (selectedIndex !== idx) videoRef.current?.pause()
     }
   }, [selectedIndex, idx])
   const { slug } = useParams()
   return (
-    <Link href={`/${slug ? '/' : project.slug}`}>
-      <video
-        ref={videoRef}
-        style={{
-          visibility: selectedIndex === idx ? 'visible' : 'hidden',
-        }}
-        src={videoAndThumbnail?.video?.url1080 || videoAndThumbnail?.video?.url}
-        poster={
-          videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
-        }
-        className="absolute left-1/2 -translate-x-1/2 h-full w-auto object-cover rounded-sm"
-        muted
-        playsInline
-        loop
-      />
-    </Link>
+    <>
+      <Link href={`/${slug ? '/' : project.slug}`}>
+        <video
+          ref={videoRef}
+          src={
+            videoAndThumbnail?.video?.url1080 || videoAndThumbnail?.video?.url
+          }
+          poster={
+            videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
+          }
+          crossOrigin="anonymous"
+          className="h-full w-auto object-contain rounded-sm"
+          muted
+          playsInline
+          loop
+        />
+      </Link>
+    </>
   )
 }
 
 export default function AllProjects({ projects }: { projects: Project[] }) {
-  const { per, perNext } = useScrollState((state) => state)
-  const { slug } = useParams()
-  const isMobile = useMediaQuery('(max-width: 768px)', {
-    defaultValue: false,
-    initializeWithValue: false,
-  })
-  const pathname = usePathname()
-  const router = useRouter()
-
   // Initialize store with projects on client side
   useEffect(() => {
     useProjectsStore.setState({ projectList: projects })
@@ -277,37 +267,8 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{
-          width: `${slug && !isMobile ? (11 / 14) * 100 : (8 / 14) * 100}%`,
-          filter:
-            (slug && isMobile) || pathname === '/info' ? 'blur(10px)' : 'none',
-          opacity: (slug && isMobile) || pathname === '/info' ? 0.8 : 1,
-        }}
-        transition={{
-          duration: 0.5,
-          ease: 'anticipate',
-          filter: { duration: 0.5, ease: 'easeInOut' },
-        }}
-        className="fixed left-3/14 lg:left-3/14 h-screen w-8/14 flex flex-col items-center"
-      >
-        <Thumbnails top={true} per={per} projects={projects} />
-        <motion.div
-          initial={{ height: '50%' }}
-          transition={{ duration: 0.5, ease: 'anticipate' }}
-          animate={{ height: slug ? '75%' : '50%' }}
-          className="max-md:basis-3/11 flex justify-center py-1 max-w-full"
-        >
-          <div className="aspect-16/8 h-full w-auto relative">
-            {projects.map((project, idx) => (
-              <Video key={project.slug} project={project} idx={idx} />
-            ))}
-          </div>
-        </motion.div>
-        <Thumbnails per={perNext} projects={projects} />
-      </motion.div>
       <Scroller projects={projects} />
+      <Renderer />
     </>
   )
 }

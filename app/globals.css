@@ -25,20 +25,17 @@
   --font-mono: 'Orator', monospace;
   --font-serif: 'Spectral', serif;
 
+  --text-base: 10px;
   --text-p: 15px;
+  --text-md: 1.7rem;
 }
 
 html {
-  @apply snap-y snap-mandatory;
+  @apply snap-y snap-mandatory text-base;
 }
-html,
+
 body {
-  /* hide scrollbar */
-  /* scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  } */
+  @apply text-md;
 }
 
 body {

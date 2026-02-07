@@ -51,9 +51,11 @@ export interface Project {
 export type ProjectsState = {
   selectedIndex: number
   projectList: Project[]
+  video: HTMLVideoElement | null
 }
 
 export const useProjectsStore = create<ProjectsState>((set) => ({
   selectedIndex: 0,
   projectList: [],
+  video: null,
 }))
