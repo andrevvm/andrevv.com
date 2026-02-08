@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Project, RoleItem, useProjectsStore } from '@/stores/projects'
 import Link from 'next/link'
@@ -25,20 +25,23 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
   )
   const rolesDisplay = useAsciiScramble(roles)
 
-  const handleTextTracks = () => {
-    const cue = video?.textTracks[0]?.activeCues[0] as VTTCue
+  const handleTextTracks = useCallback(() => {
+    const cue = video?.textTracks[0]?.activeCues?.[0] as VTTCue
     setTrack(cue?.text || '')
-  }
+  }, [video])
 
   useEffect(() => {
-    if (video?.textTracks[0]) {
-      video.textTracks[0].mode = 'hidden'
+    if (!video) return
+    const tracks = video.textTracks[0]
+    if (tracks) {
+      // eslint-disable-next-line react-hooks/immutability -- DOM API, not state mutation
+      tracks.mode = 'hidden'
     }
-    video?.addEventListener('timeupdate', handleTextTracks)
+    video.addEventListener('timeupdate', handleTextTracks)
     return () => {
-      video?.removeEventListener('timeupdate', handleTextTracks)
+      video.removeEventListener('timeupdate', handleTextTracks)
     }
-  }, [video])
+  }, [video, handleTextTracks])
 
   useEffect(() => {
     console.log(track === '')
