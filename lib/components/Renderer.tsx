@@ -22,6 +22,8 @@ const isChrome =
   /Chrome/.test(navigator.userAgent) &&
   !/Edg/.test(navigator.userAgent)
 
+const characters = '  ❍✫✧❀✿ '
+
 const meltVertexShader = `
   varying vec2 vUv;
   void main() {
@@ -93,7 +95,7 @@ const asciiFragmentShader = `
     vec4 sceneColor = texture2D(uSceneTexture, cellCenter);
 
     // Calculate brightness (luminance)
-    float brightness = dot(sceneColor.rgb, vec3(0.299, 0.587, 0.114));
+    float brightness = dot(sceneColor.rgb, vec3(0.33, 0.33, 0.33));
 
     // Map brightness to character index (matches AsciiEffect with invert=true)
     float idx = floor((1.0 - brightness) * (uNumChars - 1.0));
@@ -109,7 +111,7 @@ const asciiFragmentShader = `
     );
 
     // Sample character glyph alpha
-    float charAlpha = texture2D(uCharAtlas, atlasUv).a;
+    float charAlpha = texture2D(uCharAtlas, atlasUv).a * 0.9;
 
     gl_FragColor = vec4(sceneColor.rgb * charAlpha, charAlpha);
   }
@@ -231,15 +233,15 @@ const Video = () => {
   if (!texture) return null
 
   return (
-    <mesh position={[-100, 0, 0]}>
-      <planeGeometry args={[size.width, size.height]} />
-      <meshBasicMaterial ref={materialRef} toneMapped={false} />
+    <mesh position={[0, 0, 0]}>
+      <planeGeometry args={[size.width * 1.2, size.height]} />
+      <meshBasicMaterial color="white" ref={materialRef} toneMapped={false} />
     </mesh>
   )
 }
 
 const GpuAsciiEffect = ({
-  characters = '  ❍✧✳❀✿ ',
+  characters = '',
   resolution = 0.04,
   renderIndex = 1,
 }: {
@@ -327,21 +329,11 @@ const ThreeScene = () => {
 
   return (
     <>
-      {isChrome ? (
-        <AsciiRenderer
-          renderIndex={1}
-          characters="  ❍✫✧❀✿ "
-          color={true}
-          bgColor="transparent"
-          resolution={resolution * 2}
-        />
-      ) : (
-        <GpuAsciiEffect
-          characters="  ❍✫✧❀✿ "
-          resolution={resolution}
-          renderIndex={1}
-        />
-      )}
+      <GpuAsciiEffect
+        characters={characters}
+        resolution={resolution}
+        renderIndex={1}
+      />
       <OrthographicCamera makeDefault position={[0, 0, 10]} />
       <Video />
     </>
@@ -355,7 +347,7 @@ const Renderer = () => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: slug ? 0 : 1 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 1.25, ease: 'circInOut' }}
       className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5 h-screen w-auto aspect-video"
     >

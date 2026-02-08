@@ -1,9 +1,17 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { type Project, useProjectsStore } from '@/stores/projects'
 import { useScrollState } from '@/stores/scroll'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ReactEventHandler,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { getVideoAndThumbnail } from '@/lib/videoHelper'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -12,6 +20,7 @@ import { useGSAP } from '@gsap/react'
 import ScrollToPlugin from 'gsap/ScrollToPlugin'
 import { useMediaQuery } from 'usehooks-ts'
 import Renderer from './Renderer'
+import { video } from 'framer-motion/client'
 
 gsap.registerPlugin(useGSAP)
 gsap.registerPlugin(ScrollToPlugin)
@@ -104,18 +113,18 @@ function Scroller({ projects }: { projects: Project[] }) {
           <motion.div
             key={project.slug}
             id={`scroller-${idx}`}
-            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center p-4 snap-start leading-none gap-0.5"
+            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden"
             style={{
               height: `${100 / divider}%`,
             }}
             transition={{ duration: 0.5, ease: 'anticipate' }}
           >
             <motion.div
-              initial={{ width: '0%' }}
-              animate={{ width: slug || isMobile ? '82.5%' : '33%' }}
-              className="h-auto aspect-video"
+              initial={{ scale: 0 }}
+              animate={{ scale: slug ? 1 : isMobile ? 0.66 : 0.33 }}
+              className="h-auto w-full md:w-5/6 flex justify-center items-center"
             >
-              <Video key={project.slug} project={project} idx={idx} />
+              <Video project={project} idx={idx} />
             </motion.div>
           </motion.div>
         )
@@ -237,17 +246,48 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
           useProjectsStore.setState({ video: videoRef.current })
         })
     } else {
-      if (selectedIndex !== idx) videoRef.current?.pause()
+      if (!videoRef.current?.paused) {
+        videoRef.current?.pause()
+        console.log('video pause', videoRef.current)
+      }
     }
   }, [selectedIndex, idx])
   const { slug } = useParams()
+  const [waiting, setWaiting] = useState(false)
+
+  const handleWait = () => {
+    setWaiting(true)
+  }
+  const handlePlay = () => {
+    setWaiting(false)
+  }
+
   return (
     <>
       <Link
         href={`/${slug ? '/' : project.slug}`}
-        className="pointer-events-auto h-full flex items-center justify-center"
-        key={slug as string}
+        className="pointer-events-auto w-full flex items-center justify-center rounded-sm relative"
+        style={{
+          aspectRatio: `${videoAndThumbnail?.video?.width} /${videoAndThumbnail?.video?.height}`,
+        }}
       >
+        <AnimatePresence initial={true}>
+          {waiting && (
+            <motion.div
+              key="waiting-spinner"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ in: { delay: 0.25 }, duration: 0.25 }}
+              className="absolute z-10 inset-0 flex justify-center items-center bg-[#222222] mix-blend-difference"
+            >
+              <span className="text-[96px] md:text-[180px] text-white animate-spin">
+                ✳
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <video
           ref={videoRef}
           src={
@@ -257,11 +297,17 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
             videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
           }
           crossOrigin="anonymous"
-          className="h-full w-auto m-auto object-contain object-center rounded-sm shadow-background shadow-lg"
+          className="h-auto w-full m-auto object-contain bg-black object-center rounded-lg"
           muted
           playsInline
           loop
-        />
+          onWaiting={handleWait}
+          onStalled={handleWait}
+          onPlaying={handlePlay}
+          onTimeUpdate={handlePlay}
+        >
+          <track default kind="captions" srcLang="en" src="/ch-projects.vtt" />
+        </video>
       </Link>
     </>
   )

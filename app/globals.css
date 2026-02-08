@@ -11,8 +11,8 @@
 
 :root {
   --light: #f1f1f1;
-  --dark: #131313;
-  --dark-transparent: #131313cc;
+  --dark: #0c0c0c;
+  --dark-transparent: #0c0c0ccc;
   --accent: #ff7ad5;
 }
 
@@ -30,6 +30,7 @@
   --text-md: 1.7rem;
 
   --shadow-lg: 0 0 40px var(--dark), 0 0 40px var(--dark);
+  --animate-spin: 1.5s spin linear infinite;
 }
 
 html {
@@ -62,3 +63,4 @@ a:hover,
 a.group:hover {
   @apply text-inherit;
 }
+

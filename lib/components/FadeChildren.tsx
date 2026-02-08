@@ -18,20 +18,22 @@ export default function ChildrenWrapper({
   const router = useRouter()
   return (
     <motion.div
+      style={{ pointerEvents: pathname === '/info' ? 'auto' : 'none' }}
       initial={{
-        backdropFilter: 'blur(0px)',
+        backgroundColor: 'rgba(12, 12, 12, 0)',
       }}
       animate={{
-        backdropFilter: 'blur(20px)',
-        backgroundColor: '#131313cc',
-        width: pathname === '/info' && !isMobile ? '100%' : '',
+        backdropFilter: pathname === '/info' ? 'blur(20px)' : 'blur(0px)',
+        backgroundColor:
+          pathname === '/info'
+            ? 'rgba(12, 12, 12, 0.8)'
+            : 'rgba(12, 12, 12, 0)',
       }}
       transition={{
         duration: 0.5,
         ease: 'easeInOut',
-        width: { duration: 0 },
       }}
-      className="fixed z-20 md:bottom-0 left-0 md:w-6/14 lg:w-4/14 xl:w-3/14"
+      className="fixed z-20 inset-0"
       onClick={() => {
         if (pathname === '/info') {
           router.push('/')
