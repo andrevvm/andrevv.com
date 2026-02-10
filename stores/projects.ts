@@ -33,8 +33,14 @@ export interface TypeCollection {
   items: TypeItem[]
 }
 
+export interface SubtitlesItem {
+  url: string
+}
+
 export interface VideoItem {
+  id: string
   taskData: TaskData
+  subtitles: SubtitlesItem
 }
 
 export interface VideosCollection {
