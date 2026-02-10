@@ -62,10 +62,10 @@ const decayFragmentShader = `
 
     // Restore saturation lost from blur averaging
     float gray = dot(col.rgb, vec3(0.299, 0.587, 0.114));
-    col.rgb = mix(vec3(gray), col.rgb + uDecay * 0.0025, 1.005 + uDecay*0.01);
+    col.rgb = mix(vec3(gray), col.rgb + uDecay * 0.0005, 1.005 + uDecay*0.005);
 
     // Restore contrast — push away from mid-gray
-    col.rgb = (col.rgb - uDecay * 0.035) * 1.03 + 0.025;
+    col.rgb = (col.rgb - uDecay * 0.03) * 1.03 + 0.025;
 
     gl_FragColor = col;
   }
@@ -95,7 +95,7 @@ const asciiFragmentShader = `
     vec4 sceneColor = texture2D(uSceneTexture, cellCenter);
 
     // Calculate brightness (luminance)
-    float brightness = dot(sceneColor.rgb, vec3(0.33, 0.33, 0.33));
+    float brightness = dot(sceneColor.rgb, vec3(0.2, 0.2, 0.2));
 
     // Map brightness to character index (matches AsciiEffect with invert=true)
     float idx = floor((1.0 - brightness) * (uNumChars - 1.0));
@@ -179,8 +179,8 @@ const Video = () => {
       uniforms: {
         uCurrentFrame: { value: null },
         uPreviousFrame: { value: null },
-        uDecay: { value: 0.92 },
-        uBleed: { value: 0.0001 },
+        uDecay: { value: 0.95 },
+        uBleed: { value: 0.00015 },
         uVideoScale: { value: new Vector2(1, 1) },
       },
       vertexShader: meltVertexShader,

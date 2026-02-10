@@ -14,22 +14,13 @@
   --dark: #0c0c0c;
   --dark-transparent: #0c0c0c66;
   --light-transparent: #f1f1f166;
-  --accent: #ff5e00;
+  --accent: #ff409f;
   --accent-transparent: #ff6543cc;
 
-  --bg: var(--light);
-  --fg: var(--dark);
-  --overlay: var(--light-transparent);
-  --shadow-color: var(--light);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: var(--dark);
-    --fg: var(--light);
-    --overlay: var(--dark-transparent);
-    --shadow-color: var(--dark);
-  }
+  --bg: var(--dark);
+  --fg: var(--light);
+  --overlay: var(--dark-transparent);
+  --shadow-color: var(--dark);
 }
 
 @theme inline {

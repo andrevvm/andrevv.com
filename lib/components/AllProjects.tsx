@@ -121,8 +121,10 @@ function Scroller({ projects }: { projects: Project[] }) {
           >
             <motion.div
               initial={{ scale: 0 }}
-              animate={{ scale: slug ? 1 : isMobile ? 0.66 : 0.5 }}
-              className="h-auto w-full md:w-1/2 flex justify-center items-center"
+              animate={{
+                scale: slug ? (isMobile ? 0.95 : 0.75) : isMobile ? 0.66 : 0.33,
+              }}
+              className="h-auto w-full md:w-5/6 flex justify-center items-center"
             >
               <Video project={project} idx={idx} />
             </motion.div>

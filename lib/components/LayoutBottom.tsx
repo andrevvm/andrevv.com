@@ -122,7 +122,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
       animate={{ opacity: pathname === '/info' ? 0 : 1 }}
       className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-5 md:p-13.25 leading-none bg-none flex items-end justify-end gap-y-2"
     >
-      <div className="flex-1 flex flex-col items-center justify-end max-md:pb-12">
+      <div className="flex-1 flex flex-col items-center justify-end max-md:pb-12 gap-y-2">
         <AnimatePresence initial={true} mode="wait">
           {(project || !slug) && (
             <motion.div
@@ -132,7 +132,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               exit={{ height: 0 }}
               className="overflow-hidden flex-col gap-y-0"
             >
-              <div className="flex-1 flex justify-center items-end">
+              <div className="flex justify-center items-end">
                 <Link
                   href={`/${project.slug}`}
                   className="pointer-events-auto bg-background rounded-sm py-1.5 px-3"
@@ -174,47 +174,58 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         <AnimatePresence initial={true} mode="wait">
           {slug && track !== '' && cc.length > 0 && (
             <motion.div
-              key={`cc-${project.slug}`}
+              key={`cc`}
               initial={{ height: 0 }}
               animate={{
-                height: track === '' ? '0px' : 'auto',
+                height: 'auto',
               }}
               exit={{ height: 0 }}
-              className="overflow-hidden flex flex-col"
+              className="overflow-hidden flex flex-col origin-bottom"
             >
-              <div className="flex gap-x-3 items-center pointer-events-auto select-none">
+              <div className="flex gap-x-3 items-stretch pointer-events-auto select-none">
                 <button
-                  className="flex text-accent text-[18px] flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                  className="flex items-center text-light text-[18px] flex-1 leading-none cursor-pointer hover:text-accent active:text-white"
                   onClick={previousCue}
                 >
                   ◀
                 </button>
-                <div className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-2 px-3 bg-light rounded-sm md:w-200 cursor-default">
+                <div
+                  key="player"
+                  className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-3.5 px-3 bg-light rounded-sm md:w-200 cursor-default"
+                >
                   {cc}
                   <motion.div
                     animate={{
                       width: `${progress * 100}%`,
                     }}
                     transition={{ duration: 0.25, ease: 'linear' }}
-                    className="absolute bottom-0 left-0 h-[2px] bg-accent"
+                    className="absolute bottom-0 left-0 h-2 bg-accent rounded-sm pr-2 box-content"
                   ></motion.div>
+
                   {cuesArray.map((cue, i) => {
-                    console.log(cue?.startTime, video?.duration)
                     return (
-                      <div
-                        key={`cue-${i}`}
-                        className="w-[8px] h-[2px] absolute bottom-0 bg-light mix-blend-difference"
-                        style={{
-                          left: video?.duration
-                            ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
-                            : 0,
-                        }}
-                      ></div>
+                      <AnimatePresence key={`presence-${i}`}>
+                        <motion.div
+                          key={`cue-${i}`}
+                          className="w-2 h-2 absolute bottom-0 bg-light mix-blend-difference rounded-sm origin-center"
+                          initial={{ scale: 0 }}
+                          animate={{
+                            scale: 1,
+                            left: video?.duration
+                              ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
+                              : 0,
+                          }}
+                          exit={{
+                            scale: 0,
+                          }}
+                          transition={{ duration: 0.5, ease: 'anticipate' }}
+                        ></motion.div>
+                      </AnimatePresence>
                     )
                   })}
                 </div>
                 <button
-                  className="flex text-accent text-[18px] flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                  className="flex items-center text-light text-[18px] flex-1 leading-none cursor-pointer hover:text-accent active:text-white"
                   onClick={nextCue}
                 >
                   ▶
