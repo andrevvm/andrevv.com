@@ -6,6 +6,10 @@ export interface ProjectDescription {
   json: Record<string, unknown>
 }
 
+export interface ProjectCredits {
+  json: Record<string, unknown>
+}
+
 export interface MediaItem {
   url: string
   width: number
@@ -41,6 +45,7 @@ export interface Project {
   title: string
   slug: string
   description: ProjectDescription
+  credits: ProjectCredits
   roleCollection: RoleCollection
   typeCollection: TypeCollection
   videosCollection: VideosCollection

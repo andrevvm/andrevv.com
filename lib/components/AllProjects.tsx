@@ -307,7 +307,15 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
           onPlaying={handlePlay}
           onTimeUpdate={handlePlay}
         >
-          <track default kind="captions" srcLang="en" src="/ch-projects.vtt" />
+          {project?.videosCollection.items.map((vid) => (
+            <track
+              key={`subtitles-${vid.id}`}
+              default
+              kind="captions"
+              srcLang="en"
+              src={vid.subtitles?.url}
+            />
+          ))}
         </video>
       </Link>
     </>

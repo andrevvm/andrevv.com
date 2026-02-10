@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { renderContentfulRichText } from '@/lib/contentfulRichText'
 import {
   Project,
   RoleItem,
@@ -158,11 +159,8 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                       <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
                         Tech: {typesDisplay}
                       </div>
-                      <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
-                        Design: Daniel Baer
-                      </div>
-                      <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
-                        In partnership with No Plans
+                      <div className="credits flex flex-col">
+                        {renderContentfulRichText(project?.credits?.json)}
                       </div>
                     </div>
                   </motion.div>
@@ -183,17 +181,23 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               className="overflow-hidden flex flex-col origin-bottom"
             >
               <div className="flex gap-x-3 items-stretch pointer-events-auto select-none">
-                <button
-                  className="flex items-center text-light text-[18px] flex-1 leading-none cursor-pointer hover:text-accent active:text-white"
-                  onClick={previousCue}
-                >
-                  ◀
-                </button>
                 <div
                   key="player"
-                  className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-3.5 px-3 bg-light rounded-sm md:w-200 cursor-default"
+                  className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-3.5 bg-light rounded-sm md:w-220 cursor-default"
                 >
+                  <button
+                    className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                    onClick={previousCue}
+                  >
+                    ◀
+                  </button>
                   {cc}
+                  <button
+                    className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                    onClick={nextCue}
+                  >
+                    ▶
+                  </button>
                   <motion.div
                     animate={{
                       width: `${progress * 100}%`,
@@ -224,12 +228,6 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                     )
                   })}
                 </div>
-                <button
-                  className="flex items-center text-light text-[18px] flex-1 leading-none cursor-pointer hover:text-accent active:text-white"
-                  onClick={nextCue}
-                >
-                  ▶
-                </button>
               </div>
             </motion.div>
           )}
@@ -239,7 +237,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: slug ? 1 : 0 }}
-          className="absolute bottom-0 right-0 p-5 md:p-13.25 max-md:text-[12px] max-md:px-10"
+          className="absolute bottom-0 right-0 p-5 md:p-13.25 max-md:px-10"
         >
           <button
             className="pointer-events-auto bg-background rounded-sm py-1.5 px-3 lowercase cursor-pointer hover:text-accent"
