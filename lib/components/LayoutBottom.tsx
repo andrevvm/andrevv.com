@@ -112,7 +112,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
     const arr = []
     const length = video?.textTracks[0]?.cues?.length || 0
     for (let i = 0; i < length; i++) {
-      arr.push(video?.textTracks[0]?.cues[i])
+      arr.push(video?.textTracks?.[0]?.cues?.[i])
     }
     return arr
   }, [video])
@@ -206,7 +206,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                         className="w-[6px] h-[2px] absolute bottom-0 bg-accent"
                         style={{
                           left: video?.duration
-                            ? `${(cue?.startTime / video?.duration) * 100}%`
+                            ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
                             : 0,
                         }}
                       ></div>
