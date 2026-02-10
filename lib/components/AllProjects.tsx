@@ -113,7 +113,7 @@ function Scroller({ projects }: { projects: Project[] }) {
           <motion.div
             key={project.slug}
             id={`scroller-${idx}`}
-            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden"
+            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden max-md:pb-20"
             style={{
               height: `${100 / divider}%`,
             }}
@@ -121,8 +121,8 @@ function Scroller({ projects }: { projects: Project[] }) {
           >
             <motion.div
               initial={{ scale: 0 }}
-              animate={{ scale: slug ? 1 : isMobile ? 0.66 : 0.33 }}
-              className="h-auto w-full md:w-5/6 flex justify-center items-center"
+              animate={{ scale: slug ? 1 : isMobile ? 0.66 : 0.5 }}
+              className="h-auto w-full md:w-1/2 flex justify-center items-center"
             >
               <Video project={project} idx={idx} />
             </motion.div>
