@@ -21,6 +21,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
 
   const [track, setTrack] = useState('')
   const [progress, setProgress] = useState(0)
+  const [showCredits, setShowCredits] = useState(false)
 
   const project = projects[selectedIndex]
   const title = useAsciiScramble(project?.title ?? '')
@@ -107,6 +108,15 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
     }
   }
 
+  const cuesArray = useMemo(() => {
+    const arr = []
+    const length = video?.textTracks[0]?.cues?.length || 0
+    for (let i = 0; i < length; i++) {
+      arr.push(video?.textTracks[0]?.cues[i])
+    }
+    return arr
+  }, [video])
+
   return (
     <motion.div
       animate={{ opacity: pathname === '/info' ? 0 : 1 }}
@@ -136,7 +146,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                 </div>
               </div>
               <AnimatePresence>
-                {slug && (
+                {slug && showCredits && (
                   <motion.div
                     key={`type-text`}
                     initial={{ height: 0 }}
@@ -144,9 +154,15 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                     exit={{ height: 0 }}
                     className="overflow-hidden flex-col gap-y-0"
                   >
-                    <div className="flex justify-center text-center">
-                      <div className="pointer-events-auto bg-background rounded-sm py-1.5 px-3">
-                        {typesDisplay}
+                    <div className="flex flex-col justify-center items-center text-center">
+                      <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
+                        Tech: {typesDisplay}
+                      </div>
+                      <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
+                        Design: Daniel Baer
+                      </div>
+                      <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
+                        In partnership with No Plans
                       </div>
                     </div>
                   </motion.div>
@@ -166,22 +182,36 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               exit={{ height: 0 }}
               className="overflow-hidden flex flex-col"
             >
-              <div className="flex gap-x-3 items-center pointer-events-auto">
+              <div className="flex gap-x-3 items-center pointer-events-auto select-none">
                 <button
                   className="flex text-accent text-[18px] flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
                   onClick={previousCue}
                 >
                   ◀
                 </button>
-                <div className="flex relative overflow-hidden justify-center text-center text-black py-1.5 px-3 bg-white rounded-sm md:w-200">
+                <div className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-2 px-3 bg-light rounded-sm md:w-200 cursor-default">
                   {cc}
                   <motion.div
                     animate={{
                       width: `${progress * 100}%`,
                     }}
-                    transition={{ duration: 0.75, ease: 'linear' }}
-                    className="absolute bottom-0 left-0 h-px bg-accent"
+                    transition={{ duration: 0.25, ease: 'linear' }}
+                    className="absolute bottom-0 left-0 h-[2px] bg-accent"
                   ></motion.div>
+                  {cuesArray.map((cue, i) => {
+                    console.log(cue?.startTime, video?.duration)
+                    return (
+                      <div
+                        key={`cue-${i}`}
+                        className="w-[6px] h-[2px] absolute bottom-0 bg-accent"
+                        style={{
+                          left: video?.duration
+                            ? `${(cue?.startTime / video?.duration) * 100}%`
+                            : 0,
+                        }}
+                      ></div>
+                    )
+                  })}
                 </div>
                 <button
                   className="flex text-accent text-[18px] flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
@@ -194,6 +224,22 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
           )}
         </AnimatePresence>
       </div>
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: slug ? 1 : 0 }}
+          className="absolute bottom-0 right-0 p-5 md:p-13.25"
+        >
+          <button
+            className="pointer-events-auto bg-background rounded-sm py-1.5 px-3 lowercase cursor-pointer hover:text-accent"
+            onClick={() => {
+              setShowCredits(!showCredits)
+            }}
+          >
+            {useAsciiScramble(showCredits ? 'Hide' : 'Credits')}
+          </button>
+        </motion.div>
+      </AnimatePresence>
     </motion.div>
   )
 }

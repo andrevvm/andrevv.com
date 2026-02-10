@@ -14,8 +14,8 @@
   --dark: #0c0c0c;
   --dark-transparent: #0c0c0c66;
   --light-transparent: #f1f1f166;
-  --accent: #ff7ad5;
-  --accent-transparent: #ff7ad5cc;
+  --accent: #ff00ee;
+  --accent-transparent: #ff00eecc;
 
   --bg: var(--light);
   --fg: var(--dark);
@@ -39,6 +39,7 @@
   --color-accent-trans: var(--accent-transparent);
   --color-overlay: var(--overlay);
   --color-accent-overlay: var(--light-transparent);
+  --color-light: var(--light);
 
   --font-mono: 'Orator', monospace;
   --font-serif: 'Spectral', serif;
