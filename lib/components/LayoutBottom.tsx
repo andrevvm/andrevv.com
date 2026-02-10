@@ -1,10 +1,18 @@
 'use client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Project, RoleItem, useProjectsStore } from '@/stores/projects'
+import {
+  Project,
+  RoleItem,
+  TypeItem,
+  useProjectsStore,
+} from '@/stores/projects'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { useAsciiScramble } from '@/lib/hooks/useAsciiScramble'
+import gsap from 'gsap'
+import ScrollToPlugin from 'gsap/ScrollToPlugin'
+gsap.registerPlugin(ScrollToPlugin)
 
 export default function LayoutBottom({ projects }: { projects: Project[] }) {
   const { selectedIndex, video } = useProjectsStore((state) => state)
@@ -12,6 +20,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
   const pathname = usePathname()
 
   const [track, setTrack] = useState('')
+  const [progress, setProgress] = useState(0)
 
   const project = projects[selectedIndex]
   const title = useAsciiScramble(project?.title ?? '')
@@ -23,11 +32,21 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         .join(', ') ?? '',
     [project]
   )
+  const types = useMemo(
+    () =>
+      project?.typeCollection.items
+        .map((type: TypeItem) => type.title)
+        .join(', ') ?? '',
+    [project]
+  )
   const rolesDisplay = useAsciiScramble(roles)
+  const typesDisplay = useAsciiScramble(types)
 
   const handleTextTracks = useCallback(() => {
     const cue = video?.textTracks[0]?.activeCues?.[0] as VTTCue
+    console.log(video?.textTracks[0])
     setTrack(cue?.text || '')
+    if (video) setProgress(video.currentTime / video.duration)
   }, [video])
 
   useEffect(() => {
@@ -43,9 +62,50 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
     }
   }, [video, handleTextTracks])
 
-  useEffect(() => {
-    console.log(track === '')
-  }, [track])
+  const nextCue = () => {
+    const track = video?.textTracks[0]
+    const activeCue = track?.activeCues?.[0] as VTTCue
+    if (!track?.cues || !activeCue) return
+
+    for (let i = 0; i < track.cues.length; i++) {
+      if (track.cues[i] === activeCue) {
+        const next = track.cues[i + 1] as VTTCue
+        if (next && video) {
+          video.currentTime = next.startTime
+        } else {
+          gsap.to(window, {
+            scrollTo: window.scrollY + window.innerHeight,
+            overwrite: true,
+            duration: 1,
+            ease: 'power2.out',
+            onStart: () => {
+              window.document.documentElement.style.scrollSnapType = 'none'
+            },
+            onComplete: () => {
+              setTimeout(() => {
+                window.document.documentElement.style.scrollSnapType = ''
+              }, 100)
+            },
+          })
+        }
+        break
+      }
+    }
+  }
+
+  const previousCue = () => {
+    const track = video?.textTracks[0]
+    const activeCue = track?.activeCues?.[0] as VTTCue
+    if (!track?.cues || !activeCue) return
+
+    for (let i = 0; i < track.cues.length; i++) {
+      if (track.cues[i] === activeCue) {
+        const prev = track.cues[i - 1] as VTTCue
+        if (prev) video!.currentTime = prev.startTime
+        break
+      }
+    }
+  }
 
   return (
     <motion.div
@@ -54,7 +114,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
     >
       <div className="flex-1 flex flex-col items-center justify-end">
         <AnimatePresence initial={true} mode="wait">
-          {((project && track === '') || !slug) && (
+          {(project || !slug) && (
             <motion.div
               key={`title-text`}
               initial={{ height: 0 }}
@@ -65,7 +125,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               <div className="flex-1 flex justify-center items-end">
                 <Link
                   href={`/${project.slug}`}
-                  className="pointer-events-auto bg-background rounded-t-sm rounded-b-0 py-1.5 px-3"
+                  className="pointer-events-auto bg-background rounded-sm py-1.5 px-3"
                 >
                   {title}
                 </Link>
@@ -75,19 +135,60 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                   {rolesDisplay}
                 </div>
               </div>
+              <AnimatePresence>
+                {slug && (
+                  <motion.div
+                    key={`type-text`}
+                    initial={{ height: 0 }}
+                    animate={{ height: 'auto' }}
+                    exit={{ height: 0 }}
+                    className="overflow-hidden flex-col gap-y-0"
+                  >
+                    <div className="flex justify-center text-center">
+                      <div className="pointer-events-auto bg-background rounded-sm py-1.5 px-3">
+                        {typesDisplay}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
-
-          {slug && track !== '' && (
+        </AnimatePresence>
+        <AnimatePresence initial={true} mode="wait">
+          {slug && track !== '' && cc.length > 0 && (
             <motion.div
               key={`cc-${project.slug}`}
               initial={{ height: 0 }}
-              animate={{ height: track === '' ? '0px' : 'auto' }}
+              animate={{
+                height: track === '' ? '0px' : 'auto',
+              }}
               exit={{ height: 0 }}
-              className="overflow-hidden bg-accent rounded-sm"
+              className="overflow-hidden flex flex-col"
             >
-              <div className="flex justify-center text-center text-black rounded-sm py-1.5 px-3 lowercase">
-                {cc}
+              <div className="flex gap-x-3 items-center pointer-events-auto">
+                <button
+                  className="flex text-accent text-[18px] flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                  onClick={previousCue}
+                >
+                  ◀
+                </button>
+                <div className="flex relative overflow-hidden justify-center text-center text-black py-1.5 px-3 bg-white rounded-sm md:w-200">
+                  {cc}
+                  <motion.div
+                    animate={{
+                      width: `${progress * 100}%`,
+                    }}
+                    transition={{ duration: 0.75, ease: 'linear' }}
+                    className="absolute bottom-0 left-0 h-px bg-accent"
+                  ></motion.div>
+                </div>
+                <button
+                  className="flex text-accent text-[18px] flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                  onClick={nextCue}
+                >
+                  ▶
+                </button>
               </div>
             </motion.div>
           )}

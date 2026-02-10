@@ -20,14 +20,12 @@ export default function ChildrenWrapper({
     <motion.div
       style={{ pointerEvents: pathname === '/info' ? 'auto' : 'none' }}
       initial={{
-        backgroundColor: 'rgba(12, 12, 12, 0)',
+        backgroundColor: 'transparent',
       }}
       animate={{
         backdropFilter: pathname === '/info' ? 'blur(20px)' : 'blur(0px)',
         backgroundColor:
-          pathname === '/info'
-            ? 'rgba(12, 12, 12, 0.8)'
-            : 'rgba(12, 12, 12, 0)',
+          pathname === '/info' ? 'var(--color-overlay)' : 'transparent',
       }}
       transition={{
         duration: 0.5,

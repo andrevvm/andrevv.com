@@ -12,15 +12,33 @@
 :root {
   --light: #f1f1f1;
   --dark: #0c0c0c;
-  --dark-transparent: #0c0c0ccc;
+  --dark-transparent: #0c0c0c66;
+  --light-transparent: #f1f1f166;
   --accent: #ff7ad5;
+  --accent-transparent: #ff7ad5cc;
+
+  --bg: var(--light);
+  --fg: var(--dark);
+  --overlay: var(--light-transparent);
+  --shadow-color: var(--light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: var(--dark);
+    --fg: var(--light);
+    --overlay: var(--dark-transparent);
+    --shadow-color: var(--dark);
+  }
 }
 
 @theme inline {
-  --color-background: var(--dark);
-  --color-foreground: var(--light);
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
   --color-accent: var(--accent);
-  --color-overlay: var(--dark-transparent);
+  --color-accent-trans: var(--accent-transparent);
+  --color-overlay: var(--overlay);
+  --color-accent-overlay: var(--light-transparent);
 
   --font-mono: 'Orator', monospace;
   --font-serif: 'Spectral', serif;
@@ -29,7 +47,7 @@
   --text-p: 15px;
   --text-md: 1.7rem;
 
-  --shadow-lg: 0 0 40px var(--dark), 0 0 40px var(--dark);
+  --shadow-lg: 0 0 40px var(--shadow-color), 0 0 40px var(--shadow-color);
   --animate-spin: 1.5s spin linear infinite;
 }
 
@@ -63,4 +81,3 @@ a:hover,
 a.group:hover {
   @apply text-inherit;
 }
-

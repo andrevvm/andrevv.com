@@ -93,7 +93,7 @@ function Scroller({ projects }: { projects: Project[] }) {
     useProjectsStore.setState({ selectedIndex: scrollIndex })
     if (!hasInteracted) return
     if (slug) {
-      router.replace(isMobile ? `/` : `/${projects[scrollIndex].slug}`)
+      router.replace(`/${projects[scrollIndex].slug}`)
     }
   }, [scrollIndex, router, hasInteracted])
 
@@ -248,7 +248,6 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
     } else {
       if (!videoRef.current?.paused) {
         videoRef.current?.pause()
-        console.log('video pause', videoRef.current)
       }
     }
   }, [selectedIndex, idx])
