@@ -38,6 +38,7 @@
   --text-base: 10px;
   --text-p: 15px;
   --text-md: 1.7rem;
+  --text-sm: 1.4rem;
   --text-m-md: 1.4rem;
 
   --shadow-lg: 0 0 40px var(--shadow-color), 0 0 40px var(--shadow-color);
@@ -66,7 +67,7 @@ p + p {
   @apply mt-4;
 }
 .credits p {
-  @apply font-mono lowercase leading-none m-0 text-m-md md:text-md inline bg-background rounded-sm py-1.5 px-3;
+  @apply font-mono lowercase leading-none m-0 text-m-md md:text-sm inline bg-background rounded-sm py-1.5 px-3;
 }
 
 a:hover,

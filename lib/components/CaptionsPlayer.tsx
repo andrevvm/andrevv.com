@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, stagger } from 'framer-motion'
 import { useProjectsStore } from '@/stores/projects'
 import { useParams } from 'next/navigation'
 import { useAsciiScramble } from '@/lib/hooks/useAsciiScramble'
@@ -99,7 +99,10 @@ export default function CaptionsPlayer() {
   }, [currentCueIndex, seekTo])
 
   const previousCue = useCallback(() => {
-    if (currentCueIndex <= 0) return
+    if (currentCueIndex <= 0) {
+      seekTo(0)
+      return
+    }
     seekTo(currentCueIndex - 1)
   }, [currentCueIndex, seekTo])
 
@@ -121,14 +124,14 @@ export default function CaptionsPlayer() {
               className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-3.5 bg-light rounded-sm md:w-220 cursor-default"
             >
               <button
-                className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-background active:text-white"
                 onClick={previousCue}
               >
                 ◀
               </button>
               {cc}
               <button
-                className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
+                className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-background active:text-white"
                 onClick={nextCue}
               >
                 ▶
@@ -138,30 +141,39 @@ export default function CaptionsPlayer() {
                   width: `${progress * 100}%`,
                 }}
                 transition={{ duration: 0.25, ease: 'linear' }}
-                className="absolute bottom-0 left-0 h-2 bg-accent rounded-sm pr-2 box-content"
+                className="absolute bottom-[0.5px] left-0 h-1.5 bg-accent rounded-none pr-4 box-content"
               ></motion.div>
-
-              {cuesArray.map((cue, i) => {
-                return (
-                  <AnimatePresence key={`presence-${i}`}>
+              <AnimatePresence mode="wait">
+                {cuesArray.map((cue, i) => {
+                  return (
                     <motion.div
                       key={`cue-${i}`}
-                      className="w-2 h-2 absolute bottom-0 bg-light mix-blend-difference rounded-sm origin-center"
-                      initial={{ scale: 0 }}
+                      className="w-4 h-1.5 hover:h-4 transition-[height] duration-150 ease-out absolute bottom-[0.5px] bg-light mix-blend-difference rounded-none origin-bottom cursor-pointer"
+                      initial={{
+                        scaleY: 0,
+                        left: video?.duration
+                          ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
+                          : 0,
+                      }}
                       animate={{
-                        scale: 1,
+                        scaleY: 1,
                         left: video?.duration
                           ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
                           : 0,
                       }}
                       exit={{
-                        scale: 0,
+                        scaleY: 0,
                       }}
-                      transition={{ duration: 0.5, ease: 'anticipate' }}
+                      transition={{
+                        delay: i * 0.1,
+                        duration: 0.5,
+                        ease: 'anticipate',
+                      }}
+                      onClick={() => seekTo(i)}
                     ></motion.div>
-                  </AnimatePresence>
-                )
-              })}
+                  )
+                })}
+              </AnimatePresence>
             </div>
           </div>
         </motion.div>

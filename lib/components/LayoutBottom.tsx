@@ -76,9 +76,9 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                     exit={{ height: 0 }}
                     className="overflow-hidden flex-col gap-y-0"
                   >
-                    <div className="flex flex-col justify-center items-center text-center">
+                    <div className="flex flex-col justify-center items-center text-center text-sm">
                       <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
-                        Tech: {typesDisplay}
+                        {typesDisplay}
                       </div>
                       <div className="credits flex flex-col">
                         {renderContentfulRichText(project?.credits?.json)}
