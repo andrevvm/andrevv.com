@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const ASCII_CHARS = '❍✫✧❀✿'
+const ASCII_CHARS = '◦▫❍✫✧❀✿❁'
 
 export function useAsciiScramble(text: string, duration = 600) {
   const [display, setDisplay] = useState(text)
@@ -51,7 +51,8 @@ export function useAsciiScramble(text: string, duration = 600) {
           if (prev[i] === ' ') {
             result += ' '
           } else if (i < scrambledCount) {
-            result += ASCII_CHARS[Math.floor(Math.random() * ASCII_CHARS.length)]
+            result +=
+              ASCII_CHARS[Math.floor(Math.random() * ASCII_CHARS.length)]
           } else {
             result += prev[i]
           }
@@ -67,7 +68,8 @@ export function useAsciiScramble(text: string, duration = 600) {
           } else if (i < resolvedCount) {
             result += target[i]
           } else {
-            result += ASCII_CHARS[Math.floor(Math.random() * ASCII_CHARS.length)]
+            result +=
+              ASCII_CHARS[Math.floor(Math.random() * ASCII_CHARS.length)]
           }
         }
       }

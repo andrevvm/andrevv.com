@@ -22,7 +22,7 @@ const isChrome =
   /Chrome/.test(navigator.userAgent) &&
   !/Edg/.test(navigator.userAgent)
 
-const characters = '  ❍✫✧❀✿ '
+const characters = '  ◦▫❍✫✧❀✿❁ '
 
 const meltVertexShader = `
   varying vec2 vUv;

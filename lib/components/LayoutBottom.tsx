@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { renderContentfulRichText } from '@/lib/contentfulRichText'
 import {
@@ -11,22 +11,17 @@ import {
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { useAsciiScramble } from '@/lib/hooks/useAsciiScramble'
-import gsap from 'gsap'
-import ScrollToPlugin from 'gsap/ScrollToPlugin'
-gsap.registerPlugin(ScrollToPlugin)
+import CaptionsPlayer from '@/lib/components/CaptionsPlayer'
 
 export default function LayoutBottom({ projects }: { projects: Project[] }) {
-  const { selectedIndex, video } = useProjectsStore((state) => state)
+  const { selectedIndex } = useProjectsStore((state) => state)
   const { slug } = useParams()
   const pathname = usePathname()
 
-  const [track, setTrack] = useState('')
-  const [progress, setProgress] = useState(0)
   const [showCredits, setShowCredits] = useState(false)
 
   const project = projects[selectedIndex]
   const title = useAsciiScramble(project?.title ?? '')
-  const cc = useAsciiScramble(track)
   const roles = useMemo(
     () =>
       project?.roleCollection.items
@@ -43,80 +38,6 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
   )
   const rolesDisplay = useAsciiScramble(roles)
   const typesDisplay = useAsciiScramble(types)
-
-  const handleTextTracks = useCallback(() => {
-    const cue = video?.textTracks[0]?.activeCues?.[0] as VTTCue
-    console.log(video?.textTracks[0])
-    setTrack(cue?.text || '')
-    if (video) setProgress(video.currentTime / video.duration)
-  }, [video])
-
-  useEffect(() => {
-    if (!video) return
-    const tracks = video.textTracks[0]
-    if (tracks) {
-      // eslint-disable-next-line react-hooks/immutability -- DOM API, not state mutation
-      tracks.mode = 'hidden'
-    }
-    video.addEventListener('timeupdate', handleTextTracks)
-    return () => {
-      video.removeEventListener('timeupdate', handleTextTracks)
-    }
-  }, [video, handleTextTracks])
-
-  const nextCue = () => {
-    const track = video?.textTracks[0]
-    const activeCue = track?.activeCues?.[0] as VTTCue
-    if (!track?.cues || !activeCue) return
-
-    for (let i = 0; i < track.cues.length; i++) {
-      if (track.cues[i] === activeCue) {
-        const next = track.cues[i + 1] as VTTCue
-        if (next && video) {
-          video.currentTime = next.startTime
-        } else {
-          gsap.to(window, {
-            scrollTo: window.scrollY + window.innerHeight,
-            overwrite: true,
-            duration: 1,
-            ease: 'power2.out',
-            onStart: () => {
-              window.document.documentElement.style.scrollSnapType = 'none'
-            },
-            onComplete: () => {
-              setTimeout(() => {
-                window.document.documentElement.style.scrollSnapType = ''
-              }, 100)
-            },
-          })
-        }
-        break
-      }
-    }
-  }
-
-  const previousCue = () => {
-    const track = video?.textTracks[0]
-    const activeCue = track?.activeCues?.[0] as VTTCue
-    if (!track?.cues || !activeCue) return
-
-    for (let i = 0; i < track.cues.length; i++) {
-      if (track.cues[i] === activeCue) {
-        const prev = track.cues[i - 1] as VTTCue
-        if (prev) video!.currentTime = prev.startTime
-        break
-      }
-    }
-  }
-
-  const cuesArray = useMemo(() => {
-    const arr = []
-    const length = video?.textTracks[0]?.cues?.length || 0
-    for (let i = 0; i < length; i++) {
-      arr.push(video?.textTracks?.[0]?.cues?.[i])
-    }
-    return arr
-  }, [video])
 
   return (
     <motion.div
@@ -169,69 +90,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
             </motion.div>
           )}
         </AnimatePresence>
-        <AnimatePresence initial={true} mode="wait">
-          {slug && track !== '' && cc.length > 0 && (
-            <motion.div
-              key={`cc`}
-              initial={{ height: 0 }}
-              animate={{
-                height: 'auto',
-              }}
-              exit={{ height: 0 }}
-              className="overflow-hidden flex flex-col origin-bottom"
-            >
-              <div className="flex gap-x-3 items-stretch pointer-events-auto select-none">
-                <div
-                  key="player"
-                  className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-3.5 bg-light rounded-sm md:w-220 cursor-default"
-                >
-                  <button
-                    className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
-                    onClick={previousCue}
-                  >
-                    ◀
-                  </button>
-                  {cc}
-                  <button
-                    className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
-                    onClick={nextCue}
-                  >
-                    ▶
-                  </button>
-                  <motion.div
-                    animate={{
-                      width: `${progress * 100}%`,
-                    }}
-                    transition={{ duration: 0.25, ease: 'linear' }}
-                    className="absolute bottom-0 left-0 h-2 bg-accent rounded-sm pr-2 box-content"
-                  ></motion.div>
-
-                  {cuesArray.map((cue, i) => {
-                    return (
-                      <AnimatePresence key={`presence-${i}`}>
-                        <motion.div
-                          key={`cue-${i}`}
-                          className="w-2 h-2 absolute bottom-0 bg-light mix-blend-difference rounded-sm origin-center"
-                          initial={{ scale: 0 }}
-                          animate={{
-                            scale: 1,
-                            left: video?.duration
-                              ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
-                              : 0,
-                          }}
-                          exit={{
-                            scale: 0,
-                          }}
-                          transition={{ duration: 0.5, ease: 'anticipate' }}
-                        ></motion.div>
-                      </AnimatePresence>
-                    )
-                  })}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <CaptionsPlayer />
       </div>
       <AnimatePresence>
         <motion.div
