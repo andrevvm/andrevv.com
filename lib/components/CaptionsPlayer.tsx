@@ -81,18 +81,17 @@ export default function CaptionsPlayer() {
     if (currentCueIndex < 0) return
 
     if (!seekTo(currentCueIndex + 1)) {
+      window.document.documentElement.style.scrollSnapType = 'none'
       gsap.to(window, {
-        scrollTo: window.scrollY + window.innerHeight,
+        scrollTo: window.scrollY + window.innerHeight + 60,
         overwrite: true,
         duration: 1,
         ease: 'power2.out',
-        onStart: () => {
-          window.document.documentElement.style.scrollSnapType = 'none'
-        },
+
         onComplete: () => {
           setTimeout(() => {
             window.document.documentElement.style.scrollSnapType = ''
-          }, 100)
+          }, 200)
         },
       })
     }
