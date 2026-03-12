@@ -41,8 +41,10 @@
   --text-base: 10px;
   --text-p: 16px;
   --text-md: 1.3rem;
-  --text-sm: 1.1rem;
+  --text-sm: 1rem;
   --text-m-md: 1.1rem;
+  --text-lg: 2rem;
+  --text-auto: inherit;
 
   --shadow-lg: 0 0 40px var(--shadow-color), 0 0 40px var(--shadow-color);
   --animate-spin: 1.5s spin linear infinite;
@@ -70,7 +72,11 @@ p + p {
   @apply mt-4;
 }
 .credits p {
-  @apply font-mono uppercase leading-none m-0 text-m-md md:text-sm inline bg-background rounded-sm py-mono-gap px-3;
+  @apply font-mono uppercase leading-none m-0 inline text-auto bg-background rounded-sm py-mono-gap px-3;
+}
+
+.caption {
+  @apply text-lg;
 }
 
 a:hover,

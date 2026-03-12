@@ -26,7 +26,7 @@ function TitleDisplay({ project }: { project: Project }) {
 
   return (
     <>
-      <div className="flex justify-center items-end">
+      <div className="flex justify-center items-end" key="title-display">
         <Link
           href={`/${project.slug}`}
           className="pointer-events-auto bg-background rounded-sm py-mono-gap px-3"
@@ -83,15 +83,15 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         <AnimatePresence>
           {slug && showCredits && (
             <motion.div
-              key={`type-text`}
+              key={`type-text-credit`}
               initial={{ height: 0 }}
               animate={{ height: 'auto' }}
               exit={{ height: 0 }}
               transition={{ ease: 'circOut' }}
-              className="overflow-hidden flex-col gap-y-0 text-sm"
+              className="overflow-hidden flex-col gap-y-0 text-sm leading-relaxed"
             >
               <TitleDisplay project={project} />
-              <div className="flex flex-col justify-center items-center text-center">
+              <div className="flex flex-col justify-center items-center text-center gap-y-4">
                 <div className="inline-flex pointer-events-auto bg-background rounded-sm px-3  py-mono-gap">
                   {typesDisplay}
                 </div>
@@ -112,7 +112,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
           className="absolute bottom-0 right-0 p-5 md:p-8 max-md:px-10"
         >
           <button
-            className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent text-sm"
+            className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent"
             onClick={() => {
               setShowCredits(!showCredits)
             }}

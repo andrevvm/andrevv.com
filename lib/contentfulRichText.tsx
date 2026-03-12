@@ -1,5 +1,4 @@
 import React from 'react'
-import { useAsciiScramble } from './hooks/useAsciiScramble'
 
 // Types for Contentful Rich Text structure
 interface RichTextMark {
@@ -71,7 +70,7 @@ function renderNode(
             break
           case 'code':
             textElement = (
-              <code key={markKey} className="font-mono text-sm">
+              <code key={markKey} className="font-mono">
                 {textElement}
               </code>
             )

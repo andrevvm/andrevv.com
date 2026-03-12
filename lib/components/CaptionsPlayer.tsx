@@ -120,7 +120,7 @@ export default function CaptionsPlayer() {
           <div className="flex gap-x-3 items-stretch pointer-events-auto select-none">
             <div
               key="player"
-              className="flex relative overflow-hidden justify-center text-center text-light py-2 pb-8 md:w-220 cursor-default"
+              className="flex relative overflow-hidden justify-center text-center text-light py-3 pb-8 md:w-220 cursor-default"
             >
               <span className="inline-flex bg-background rounded-sm px-3 leading-normal">
                 {cc}
