@@ -65,7 +65,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
       animate={{ opacity: pathname === '/info' ? 0 : 1 }}
       className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-0 leading-none bg-none flex items-end justify-end gap-y-2"
     >
-      <div className="flex-1 flex flex-col items-center justify-end max-md:pb-12 gap-y-2">
+      <div className="flex-1 flex flex-col items-center justify-end gap-y-2">
         <AnimatePresence initial={true} mode="wait">
           {!slug && (
             <motion.div
@@ -111,7 +111,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: slug ? 1 : 0 }}
-          className="absolute bottom-0 right-0 p-5 md:p-8 max-md:px-10"
+          className="absolute bottom-0 md:right-0 p-5 md:p-8 max-md:px-10 max-md:pb-14 max-md:right-1/2 translate-x-1/2"
         >
           <button
             className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent"
@@ -119,7 +119,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               setShowCredits(!showCredits)
             }}
           >
-            {useAsciiScramble(showCredits ? 'Hide' : 'Credits')}
+            {useAsciiScramble(showCredits ? 'Less' : 'Credits')}
           </button>
         </motion.div>
       </AnimatePresence>

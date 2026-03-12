@@ -258,9 +258,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
               transition={{ in: { delay: 0.25 }, duration: 0.25 }}
               className="absolute z-10 inset-0 flex justify-center items-center bg-[#222222] mix-blend-difference"
             >
-              <span className="text-[96px] md:text-[180px] text-white animate-spin leading-none font-serif h-0 flex items-center">
-                ✳
-              </span>
+              <span className="bg-light animate-spin flex w-3 h-20"></span>
             </motion.div>
           )}
         </AnimatePresence>

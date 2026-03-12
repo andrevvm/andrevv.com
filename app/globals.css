@@ -96,3 +96,7 @@ a.group:hover {
     display: none;
   }
 }
+
+@utility text-trim {
+  text-box-trim: trim-both;
+}

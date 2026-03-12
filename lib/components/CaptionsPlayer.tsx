@@ -117,12 +117,12 @@ export default function CaptionsPlayer() {
           exit={{ height: 0 }}
           className="overflow-hidden flex flex-col origin-bottom"
         >
-          <div className="flex gap-x-3 items-stretch pointer-events-auto select-none">
+          <div className="flex gap-x-3 items-stretch pointer-events-auto select-none max-md:px-10">
             <div
               key="player"
               className="flex relative overflow-hidden justify-center text-center text-light py-3 pb-8 md:w-220 cursor-default"
             >
-              <span className="inline-flex bg-background rounded-sm px-3 leading-normal">
+              <span className="inline-flex bg-background rounded-sm md:px-3 leading-normal max-md:pb-20">
                 {cc}
               </span>
 
@@ -138,7 +138,7 @@ export default function CaptionsPlayer() {
                   return (
                     <motion.div
                       key={`cue-${video?.src}-${i}`}
-                      className="w-3 h-3 hover:bg-accent transition-[height] duration-150 ease-out absolute bottom-0 bg-light mix-blend-difference origin-bottom cursor-pointer"
+                      className="w-3 h-3 flex justify-center items-center hover:bg-accent transition-[height] duration-150 ease-out absolute bottom-0 bg-light mix-blend-difference origin-bottom cursor-pointer"
                       initial={{
                         scaleY: 0,
                         left: video?.duration
@@ -160,7 +160,9 @@ export default function CaptionsPlayer() {
                         ease: 'anticipate',
                       }}
                       onClick={() => seekTo(i)}
-                    ></motion.div>
+                    >
+                      <span className="w-10 h-10 flex-none"></span>
+                    </motion.div>
                   )
                 })}
               </AnimatePresence>

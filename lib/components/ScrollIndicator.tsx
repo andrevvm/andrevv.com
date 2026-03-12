@@ -35,7 +35,7 @@ export default function ScrollIndicator() {
               transition={{ delay: 0.05 * i }}
               key={`notch-${i}`}
               style={{ top: `${(100 / projectList.length) * (i + 1)}svh` }}
-              className="fixed group z-110 w-3 h-3 right-0 bg-light flex justify-center items-center hover:bg-accent cursor-pointer -translate-y-full last:-translate-y-[200%]"
+              className="fixed group z-110 w-3 h-3 right-0 bg-light flex justify-center items-center hover:bg-accent cursor-pointer -translate-y-full md:last:-translate-y-[200%]"
               onClick={(e) => {
                 e.preventDefault()
                 scrollTo(i)
