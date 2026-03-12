@@ -280,6 +280,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
           onStalled={handleWait}
           onPlaying={handlePlay}
           onTimeUpdate={handlePlay}
+          data-duration={videoAndThumbnail?.video.duration}
         >
           {project?.videosCollection.items.map((vid) => (
             <track
