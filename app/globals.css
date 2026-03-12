@@ -2,8 +2,8 @@
 
 @import 'tailwindcss';
 @font-face {
-  font-family: 'Orator';
-  src: url('/oratorstd-webfont.woff') format('woff');
+  font-family: 'Marfa Mono';
+  src: url('/ABCMarfaMono-Regular-Trial.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -32,14 +32,17 @@
   --color-accent-overlay: var(--light-transparent);
   --color-light: var(--light);
 
-  --font-mono: 'Orator', monospace;
+  --spacing-mono-gap: 0.3em;
+  --spacing-mono-gap-lg: 0.4em;
+
+  --font-mono: 'Marfa Mono', monospace;
   --font-serif: 'Spectral', serif;
 
   --text-base: 10px;
-  --text-p: 15px;
-  --text-md: 1.7rem;
-  --text-sm: 1.4rem;
-  --text-m-md: 1.4rem;
+  --text-p: 16px;
+  --text-md: 1.3rem;
+  --text-sm: 1.1rem;
+  --text-m-md: 1.1rem;
 
   --shadow-lg: 0 0 40px var(--shadow-color), 0 0 40px var(--shadow-color);
   --animate-spin: 1.5s spin linear infinite;
@@ -55,8 +58,8 @@ body {
 
 body {
   @apply font-mono bg-background text-foreground;
-  text-transform: lowercase;
-  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
 }
 
 p {
@@ -67,7 +70,7 @@ p + p {
   @apply mt-4;
 }
 .credits p {
-  @apply font-mono lowercase leading-none m-0 text-m-md md:text-sm inline bg-background rounded-sm py-1.5 px-3;
+  @apply font-mono uppercase leading-none m-0 text-m-md md:text-sm inline bg-background rounded-sm py-mono-gap px-3;
 }
 
 a:hover,

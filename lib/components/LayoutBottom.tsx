@@ -29,13 +29,13 @@ function TitleDisplay({ project }: { project: Project }) {
       <div className="flex justify-center items-end">
         <Link
           href={`/${project.slug}`}
-          className="pointer-events-auto bg-background rounded-sm py-1.5 px-3"
+          className="pointer-events-auto bg-background rounded-sm py-mono-gap px-3"
         >
           {title}
         </Link>
       </div>
       <div className="flex justify-center text-center">
-        <div className="pointer-events-auto bg-background rounded-sm py-1.5 px-3">
+        <div className="pointer-events-auto bg-background rounded-sm py-mono-gap px-3">
           {rolesDisplay}
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
   return (
     <motion.div
       animate={{ opacity: pathname === '/info' ? 0 : 1 }}
-      className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-5 md:p-13.25 leading-none bg-none flex items-end justify-end gap-y-2"
+      className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-5 md:p-11 leading-none bg-none flex items-end justify-end gap-y-2"
     >
       <div className="flex-1 flex flex-col items-center justify-end max-md:pb-12 gap-y-2">
         <AnimatePresence initial={true} mode="wait">
@@ -72,6 +72,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               key={`type-text`}
               initial={{ height: 0 }}
               animate={{ height: 'auto' }}
+              transition={{ ease: 'circOut' }}
               exit={{ height: 0 }}
               className="overflow-hidden flex-col gap-y-0"
             >
@@ -86,11 +87,12 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               initial={{ height: 0 }}
               animate={{ height: 'auto' }}
               exit={{ height: 0 }}
-              className="overflow-hidden flex-col gap-y-0"
+              transition={{ ease: 'circOut' }}
+              className="overflow-hidden flex-col gap-y-0 text-sm"
             >
               <TitleDisplay project={project} />
-              <div className="flex flex-col justify-center items-center text-center text-sm">
-                <div className="inline-flex pointer-events-auto bg-background rounded-sm px-3">
+              <div className="flex flex-col justify-center items-center text-center">
+                <div className="inline-flex pointer-events-auto bg-background rounded-sm px-3  py-mono-gap">
                   {typesDisplay}
                 </div>
                 <div className="credits flex flex-col">
@@ -107,10 +109,10 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: slug ? 1 : 0 }}
-          className="absolute bottom-0 right-0 p-5 md:p-13.25 max-md:px-10"
+          className="absolute bottom-0 right-0 p-5 md:p-8 max-md:px-10"
         >
           <button
-            className="pointer-events-auto bg-background rounded-sm py-1.5 px-3 lowercase cursor-pointer hover:text-accent text-sm"
+            className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent text-sm"
             onClick={() => {
               setShowCredits(!showCredits)
             }}

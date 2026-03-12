@@ -317,7 +317,7 @@ const ThreeScene = () => {
   const { size } = useThree()
 
   const resolution = useMemo(() => {
-    return window.innerWidth < 768 ? 0.064 : 0.038
+    return window.innerWidth < 768 ? 0.064 : 0.041
   }, [size])
 
   const video = useProjectsStore((store) => store.video)

@@ -11,14 +11,14 @@ gsap.registerPlugin(ScrollToPlugin)
 export default function LayoutTop() {
   const pathname = usePathname()
 
-  const asciiName = useAsciiScramble('Andrew McCarthy')
+  const asciiName = useAsciiScramble('ANDREW McCARTHY')
   const asciiButton = useAsciiScramble(pathname === '/info' ? 'Close' : 'Info')
 
   return (
     <div className="fixed top-0 left-0 z-35 py-6 px-6 md:py-12 md:px-9.75 leading-none flex justify-between w-full pointer-events-none">
       <Link
         href="/"
-        className="pointer-events-auto py-0.5 px-3 bg-background rounded-sm"
+        className="normal-case pointer-events-auto py-0.5 px-3 bg-background rounded-sm"
         onClick={() => {
           if (pathname === '/') {
             window.document.documentElement.style.scrollSnapType = 'none'
