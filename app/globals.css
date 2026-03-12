@@ -14,8 +14,8 @@
   --dark: #0c0c0c;
   --dark-transparent: #0c0c0c66;
   --light-transparent: #f1f1f166;
-  --accent: #00c3ff;
-  --accent-transparent: #00c3ffcc;
+  --accent: #fbc0ff;
+  --accent-transparent: #fbc0ffcc;
 
   --bg: var(--dark);
   --fg: var(--light);

@@ -1,20 +1,15 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useParams, usePathname, useRouter } from 'next/navigation'
-import { useMediaQuery } from 'usehooks-ts'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function ChildrenWrapper({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { slug } = useParams()
   const pathname = usePathname()
-  const isMobile = useMediaQuery('(max-width: 768px)', {
-    defaultValue: false,
-    initializeWithValue: false,
-  })
+
   const router = useRouter()
   return (
     <motion.div
