@@ -44,7 +44,7 @@ export default function CaptionsPlayer() {
   }, [cuesArray, setCurrentCueIndex, video])
 
   useEffect(() => {
-    if (currentCueIndex === -1) return
+    if (currentCueIndex === -1 || !cuesArray[currentCueIndex]) return
 
     setTrack((cuesArray[currentCueIndex] as VTTCue)?.text || '')
   }, [cuesArray, currentCueIndex])
@@ -83,7 +83,7 @@ export default function CaptionsPlayer() {
     if (!seekTo(currentCueIndex + 1)) {
       window.document.documentElement.style.scrollSnapType = 'none'
       gsap.to(window, {
-        scrollTo: window.scrollY + window.innerHeight + 60,
+        scrollTo: window.scrollY + window.innerHeight,
         overwrite: true,
         duration: 1,
         ease: 'power2.out',
@@ -107,7 +107,7 @@ export default function CaptionsPlayer() {
 
   return (
     <AnimatePresence initial={true} mode="wait">
-      {slug && track !== '' && cc.length > 0 && (
+      {slug && track !== '' && cc.length > 0 && cuesArray.length && (
         <motion.div
           key={`cc`}
           initial={{ height: 0 }}
@@ -120,17 +120,19 @@ export default function CaptionsPlayer() {
           <div className="flex gap-x-3 items-stretch pointer-events-auto select-none">
             <div
               key="player"
-              className="flex relative overflow-hidden justify-center text-center text-black py-1.5 pb-3.5 bg-light rounded-sm md:w-220 cursor-default"
+              className="flex relative overflow-hidden justify-center text-center text-light py-2 pb-8 border-light border-b md:w-220 cursor-default"
             >
               <button
-                className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-background active:text-white"
+                className="flex items-center text-accent text-[18px] pr-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
                 onClick={previousCue}
               >
                 ◀
               </button>
-              {cc}
+              <span className="inline-flex bg-background rounded-sm px-3">
+                {cc}
+              </span>
               <button
-                className="flex items-center text-accent text-[18px] px-5 flex-1 leading-none cursor-pointer hover:text-background active:text-white"
+                className="flex items-center text-accent text-[18px] pl-5 flex-1 leading-none cursor-pointer hover:text-accent-trans active:text-white"
                 onClick={nextCue}
               >
                 ▶
@@ -140,14 +142,14 @@ export default function CaptionsPlayer() {
                   width: `${progress * 100}%`,
                 }}
                 transition={{ duration: 0.25, ease: 'linear' }}
-                className="absolute bottom-[0.5px] left-0 h-1.5 bg-accent rounded-none pr-4 box-content"
+                className="absolute bottom-0 left-0 h-1.5 bg-accent rounded-none pr-4 box-content"
               ></motion.div>
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {cuesArray.map((cue, i) => {
                   return (
                     <motion.div
-                      key={`cue-${i}`}
-                      className="w-4 h-1.5 hover:h-4 transition-[height] duration-150 ease-out absolute bottom-[0.5px] bg-light mix-blend-difference rounded-none origin-bottom cursor-pointer"
+                      key={`cue-${video.src}-${i}`}
+                      className="w-4 h-1.5 hover:h-3 transition-[height] duration-150 ease-out absolute bottom-0 bg-light mix-blend-difference rounded-none origin-bottom cursor-pointer"
                       initial={{
                         scaleY: 0,
                         left: video?.duration

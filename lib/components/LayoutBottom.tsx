@@ -13,14 +13,7 @@ import { useParams, usePathname } from 'next/navigation'
 import { useAsciiScramble } from '@/lib/hooks/useAsciiScramble'
 import CaptionsPlayer from '@/lib/components/CaptionsPlayer'
 
-export default function LayoutBottom({ projects }: { projects: Project[] }) {
-  const { selectedIndex } = useProjectsStore((state) => state)
-  const { slug } = useParams()
-  const pathname = usePathname()
-
-  const [showCredits, setShowCredits] = useState(false)
-
-  const project = projects[selectedIndex]
+function TitleDisplay({ project }: { project: Project }) {
   const title = useAsciiScramble(project?.title ?? '')
   const roles = useMemo(
     () =>
@@ -29,6 +22,35 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         .join(', ') ?? '',
     [project]
   )
+  const rolesDisplay = useAsciiScramble(roles)
+
+  return (
+    <>
+      <div className="flex justify-center items-end">
+        <Link
+          href={`/${project.slug}`}
+          className="pointer-events-auto bg-background rounded-sm py-1.5 px-3"
+        >
+          {title}
+        </Link>
+      </div>
+      <div className="flex justify-center text-center">
+        <div className="pointer-events-auto bg-background rounded-sm py-1.5 px-3">
+          {rolesDisplay}
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default function LayoutBottom({ projects }: { projects: Project[] }) {
+  const { selectedIndex } = useProjectsStore((state) => state)
+  const { slug } = useParams()
+  const pathname = usePathname()
+
+  const [showCredits, setShowCredits] = useState(false)
+
+  const project = projects[selectedIndex]
   const types = useMemo(
     () =>
       project?.typeCollection.items
@@ -36,7 +58,6 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         .join(', ') ?? '',
     [project]
   )
-  const rolesDisplay = useAsciiScramble(roles)
   const typesDisplay = useAsciiScramble(types)
 
   return (
@@ -46,50 +67,40 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
     >
       <div className="flex-1 flex flex-col items-center justify-end max-md:pb-12 gap-y-2">
         <AnimatePresence initial={true} mode="wait">
-          {(project || !slug) && (
+          {!slug && (
             <motion.div
-              key={`title-text`}
+              key={`type-text`}
               initial={{ height: 0 }}
               animate={{ height: 'auto' }}
               exit={{ height: 0 }}
               className="overflow-hidden flex-col gap-y-0"
             >
-              <div className="flex justify-center items-end">
-                <Link
-                  href={`/${project.slug}`}
-                  className="pointer-events-auto bg-background rounded-sm py-1.5 px-3"
-                >
-                  {title}
-                </Link>
-              </div>
-              <div className="flex justify-center text-center">
-                <div className="pointer-events-auto bg-background rounded-sm py-1.5 px-3">
-                  {rolesDisplay}
-                </div>
-              </div>
-              <AnimatePresence>
-                {slug && showCredits && (
-                  <motion.div
-                    key={`type-text`}
-                    initial={{ height: 0 }}
-                    animate={{ height: 'auto' }}
-                    exit={{ height: 0 }}
-                    className="overflow-hidden flex-col gap-y-0"
-                  >
-                    <div className="flex flex-col justify-center items-center text-center text-sm">
-                      <div className="inline-flex pointer-events-auto bg-background rounded-sm py-1.5 px-3">
-                        {typesDisplay}
-                      </div>
-                      <div className="credits flex flex-col">
-                        {renderContentfulRichText(project?.credits?.json)}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <TitleDisplay project={project} />
             </motion.div>
           )}
         </AnimatePresence>
+        <AnimatePresence>
+          {slug && showCredits && (
+            <motion.div
+              key={`type-text`}
+              initial={{ height: 0 }}
+              animate={{ height: 'auto' }}
+              exit={{ height: 0 }}
+              className="overflow-hidden flex-col gap-y-0"
+            >
+              <TitleDisplay project={project} />
+              <div className="flex flex-col justify-center items-center text-center text-sm">
+                <div className="inline-flex pointer-events-auto bg-background rounded-sm px-3">
+                  {typesDisplay}
+                </div>
+                <div className="credits flex flex-col">
+                  {renderContentfulRichText(project?.credits?.json)}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <CaptionsPlayer />
       </div>
       <AnimatePresence>
@@ -99,7 +110,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
           className="absolute bottom-0 right-0 p-5 md:p-13.25 max-md:px-10"
         >
           <button
-            className="pointer-events-auto bg-background rounded-sm py-1.5 px-3 lowercase cursor-pointer hover:text-accent"
+            className="pointer-events-auto bg-background rounded-sm py-1.5 px-3 lowercase cursor-pointer hover:text-accent text-sm"
             onClick={() => {
               setShowCredits(!showCredits)
             }}
