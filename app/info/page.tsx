@@ -21,7 +21,7 @@ export default function Info() {
             Focus on creating impactful, engaging and memorable digital
             experiences that are both delightful and functional.
           </p>
-          <p>This website was designed with code in the browser.</p>
+          <p>This website was designed in browser with code.</p>
           <p>Experimental spirit, pragmatic heart.</p>
           <p className="italic">
             <a
