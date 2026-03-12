@@ -137,7 +137,7 @@ export default function CaptionsPlayer() {
                 {cuesArray.map((cue, i) => {
                   return (
                     <motion.div
-                      key={`cue-${video.src}-${i}`}
+                      key={`cue-${video?.src}-${i}`}
                       className="w-3 h-3 hover:bg-accent transition-[height] duration-150 ease-out absolute bottom-0 bg-light mix-blend-difference origin-bottom cursor-pointer"
                       initial={{
                         scaleY: 0,
