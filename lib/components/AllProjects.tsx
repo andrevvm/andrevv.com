@@ -3,27 +3,15 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { type Project, useProjectsStore } from '@/stores/projects'
 import { useScrollState } from '@/stores/scroll'
-import {
-  ReactEventHandler,
-  SyntheticEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getVideoAndThumbnail } from '@/lib/videoHelper'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import gsap from 'gsap'
-import { useGSAP } from '@gsap/react'
-import ScrollToPlugin from 'gsap/ScrollToPlugin'
+
 import { useMediaQuery } from 'usehooks-ts'
 import Renderer from './Renderer'
-import { video } from 'framer-motion/client'
-
-gsap.registerPlugin(useGSAP)
-gsap.registerPlugin(ScrollToPlugin)
+import ScrollIndicator from './ScrollIndicator'
+import { scrollTo } from '../utils'
 
 function Scroller({ projects }: { projects: Project[] }) {
   const divider = 1
@@ -159,20 +147,8 @@ const ProjectThumbnail = ({
 
   const handleThumbClick = useCallback(
     (e: React.MouseEvent) => {
-      window.document.documentElement.style.scrollSnapType = 'none'
-
       e.preventDefault()
-      gsap.to(window, {
-        scrollTo: `#scroller-${index}`,
-        overwrite: true,
-        duration: 1,
-        ease: 'power2.out',
-        onComplete: () => {
-          setTimeout(() => {
-            window.document.documentElement.style.scrollSnapType = ''
-          }, 100)
-        },
-      })
+      scrollTo(index)
     },
     [slug, router, index]
   )
@@ -332,6 +308,7 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
     <>
       <Scroller projects={projects} />
       <Renderer />
+      <ScrollIndicator />
     </>
   )
 }

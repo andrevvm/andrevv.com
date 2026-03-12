@@ -54,12 +54,13 @@ html {
   @apply snap-y snap-mandatory text-base;
 }
 
+html,
 body {
-  @apply text-m-md md:text-md;
+  @apply no-scrollbar;
 }
 
 body {
-  @apply font-mono bg-background text-foreground;
+  @apply text-m-md md:text-md font-mono bg-background text-foreground;
   text-transform: uppercase;
   letter-spacing: 0.2em;
 }
@@ -86,4 +87,12 @@ a:hover,
 
 a.group:hover {
   @apply text-inherit;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

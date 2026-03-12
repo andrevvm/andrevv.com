@@ -63,7 +63,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
   return (
     <motion.div
       animate={{ opacity: pathname === '/info' ? 0 : 1 }}
-      className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-5 md:p-11 leading-none bg-none flex items-end justify-end gap-y-2"
+      className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-0 leading-none bg-none flex items-end justify-end gap-y-2"
     >
       <div className="flex-1 flex flex-col items-center justify-end max-md:pb-12 gap-y-2">
         <AnimatePresence initial={true} mode="wait">
@@ -76,7 +76,9 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               exit={{ height: 0 }}
               className="overflow-hidden flex-col gap-y-0"
             >
-              <TitleDisplay project={project} />
+              <div className="p-5 md:p-11">
+                <TitleDisplay project={project} />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

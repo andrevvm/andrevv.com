@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrthographicCamera, AsciiRenderer, useFBO } from '@react-three/drei'
+import { OrthographicCamera, useFBO } from '@react-three/drei'
 import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
@@ -16,11 +16,6 @@ import {
   CanvasTexture,
 } from 'three'
 import { useProjectsStore } from '@/stores/projects'
-
-const isChrome =
-  typeof navigator !== 'undefined' &&
-  /Chrome/.test(navigator.userAgent) &&
-  !/Edg/.test(navigator.userAgent)
 
 const characters = '  ◦▫✫✧❀✿❁ '
 
@@ -347,7 +342,7 @@ const Renderer = () => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: slug ? 0 : 1 }}
+      animate={{ opacity: slug ? 0 : 0.66 }}
       transition={{ duration: 0.5, ease: 'circInOut' }}
       className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5 h-screen w-auto aspect-video"
     >
