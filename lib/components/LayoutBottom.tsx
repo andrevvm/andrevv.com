@@ -111,7 +111,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: slug ? 1 : 0 }}
-          className="absolute bottom-0 md:right-0 p-5 md:p-8 max-md:px-10 max-md:pb-14 max-md:right-1/2 translate-x-1/2"
+          className="absolute bottom-0 md:right-0 p-5 md:p-8 max-md:px-10 max-md:pb-14 max-md:right-1/2 max-md:translate-x-1/2"
         >
           <button
             className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent"
