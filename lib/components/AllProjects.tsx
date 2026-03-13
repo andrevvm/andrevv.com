@@ -288,7 +288,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
               default
               kind="captions"
               srcLang="en"
-              src={vid.subtitles?.url}
+              src={vid.subtitles?.url || `/vtt/${project.slug}.vtt`}
             />
           ))}
         </video>
