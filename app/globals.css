@@ -23,7 +23,7 @@
   --shadow-color: var(--dark);
 }
 
-@theme inline {
+@theme {
   --color-background: var(--bg);
   --color-foreground: var(--fg);
   --color-accent: var(--accent);
@@ -60,7 +60,7 @@ body {
 }
 
 body {
-  @apply text-m-md md:text-md font-mono bg-background text-foreground;
+  @apply text-md font-mono bg-background text-foreground;
   text-transform: uppercase;
   letter-spacing: 0.2em;
 }
