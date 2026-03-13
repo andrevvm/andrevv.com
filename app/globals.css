@@ -3,7 +3,10 @@
 @import 'tailwindcss';
 @font-face {
   font-family: 'Marfa Mono';
-  src: url('/ABCMarfaMono-Regular-Trial.woff') format('woff');
+  src:
+    url('/ABCMarfaMono-Regular-Trial.woff2') format('woff2'),
+    url('/ABCMarfaMono-Regular-Trial.woff') format('woff'),
+    url('/ABCMarfaMono-Regular-Trial.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
