@@ -20,6 +20,13 @@ export default async function RootLayout({
   const allProjects = await getAllProjects(false)
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Spectral:ital@0;1&display=swap"
+          as="style"
+        />
+      </head>
       <body>
         <LayoutTop></LayoutTop>
         <FadeChildren>{children}</FadeChildren>
