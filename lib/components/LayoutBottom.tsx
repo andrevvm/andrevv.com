@@ -119,7 +119,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
               setShowCredits(!showCredits)
             }}
           >
-            {useAsciiScramble(showCredits ? 'Less' : 'Credits')}
+            {useAsciiScramble(showCredits ? 'Less' : 'More')}
           </button>
         </motion.div>
       </AnimatePresence>
