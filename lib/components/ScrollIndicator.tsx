@@ -10,7 +10,7 @@ export default function ScrollIndicator() {
   const { projectList, selectedIndex } = useProjectsStore()
   const height = useMemo(
     () =>
-      `calc(${(100 / projectList.length) * (selectedIndex + 1)}svh - ${100 / projectList.length}svh)`,
+      `${((100 - 100 / projectList.length) / projectList.length) * (selectedIndex + 1)}svh`,
     [projectList, selectedIndex]
   )
   const router = useRouter()
@@ -36,7 +36,7 @@ export default function ScrollIndicator() {
               transition={{ delay: 0.05 * i }}
               key={`notch-${i}`}
               style={{
-                top: `calc(${(100 / projectList.length) * (i + 1)}svh - ${100 / projectList.length}svh`,
+                top: `${((100 - 100 / projectList.length) / projectList.length) * (i + 1)}svh`,
               }}
               className="fixed group z-110 w-3 h-3 right-0 bg-light flex justify-center items-center hover:bg-accent cursor-pointer -translate-y-full"
               onClick={(e) => {
