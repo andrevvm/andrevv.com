@@ -9,7 +9,8 @@ import { scrollTo } from '../utils'
 export default function ScrollIndicator() {
   const { projectList, selectedIndex } = useProjectsStore()
   const height = useMemo(
-    () => `${(100 / projectList.length) * (selectedIndex + 1)}svh`,
+    () =>
+      `calc(${(100 / projectList.length) * (selectedIndex + 1)}svh - ${100 / projectList.length}svh)`,
     [projectList, selectedIndex]
   )
   const router = useRouter()
@@ -34,8 +35,10 @@ export default function ScrollIndicator() {
               animate={{ x: 0 }}
               transition={{ delay: 0.05 * i }}
               key={`notch-${i}`}
-              style={{ top: `${(100 / projectList.length) * (i + 1)}svh` }}
-              className="fixed group z-110 w-3 h-3 right-0 bg-light flex justify-center items-center hover:bg-accent cursor-pointer -translate-y-full md:last:-translate-y-[200%]"
+              style={{
+                top: `calc(${(100 / projectList.length) * (i + 1)}svh - ${100 / projectList.length}svh`,
+              }}
+              className="fixed group z-110 w-3 h-3 right-0 bg-light flex justify-center items-center hover:bg-accent cursor-pointer -translate-y-full"
               onClick={(e) => {
                 e.preventDefault()
                 scrollTo(i)
