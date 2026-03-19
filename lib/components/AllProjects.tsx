@@ -98,25 +98,32 @@ function Scroller({ projects }: { projects: Project[] }) {
     <div className="flex flex-col gap-0 h-screen">
       {projects.map((project, idx: number) => {
         return (
-          <motion.div
+          <div
             key={project.slug}
             id={`scroller-${idx}`}
             className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden max-md:pb-20"
             style={{
               height: `${100 / divider}%`,
             }}
-            transition={{ duration: 0.5, ease: 'anticipate' }}
           >
             <motion.div
-              initial={{ scale: 0 }}
+              initial={{
+                scale: isMobile ? 0.66 : 0.33,
+                opacity: 0,
+              }}
               animate={{
                 scale: slug ? (isMobile ? 0.95 : 0.75) : isMobile ? 0.66 : 0.33,
+                opacity: 1,
+                transition: {
+                  duration: 0.75,
+                  ease: 'anticipate',
+                },
               }}
-              className="h-auto w-full md:w-5/6 flex justify-center items-center"
+              className="h-svh w-full md:w-5/6 flex justify-center items-center"
             >
               <Video project={project} idx={idx} />
             </motion.div>
-          </motion.div>
+          </div>
         )
       })}
       {Array.from({ length: divider - 1 }).map((_, index) => (
@@ -255,8 +262,8 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ in: { delay: 0.25 }, duration: 0.25 }}
-              className="absolute z-10 inset-0 flex justify-center bg-[url(/halftone.png)] bg-repeat bg-size-[16px] items-center"
+              transition={{ in: { delay: 0.25 }, duration: 0.5 }}
+              className="absolute z-10 inset-0 flex justify-center bg-[url(/halftone.png)] bg-repeat bg-size-[8px] md:bg-size-[16px] items-center"
             >
               <div className="absolute inset-0 animate-loading bg-linear-0 from-background from-5% via-transparent to-95% to-background"></div>
             </motion.div>
