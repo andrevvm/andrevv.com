@@ -249,16 +249,16 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
         }}
       >
         <AnimatePresence initial={true}>
-          {waiting && (
+          {true && (
             <motion.div
-              key="waiting-spinner"
+              key="loading-overlay"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ in: { delay: 0.25 }, duration: 0.25 }}
-              className="absolute z-10 inset-0 flex justify-center items-center bg-[#222222] mix-blend-difference"
+              className="absolute z-10 inset-0 flex justify-center bg-[url(/halftone.png)] bg-repeat bg-size-[16px] items-center"
             >
-              <span className="bg-light animate-spin flex w-3 h-20"></span>
+              <div className="absolute inset-0 animate-loading bg-linear-0 from-background from-5% via-transparent to-95% to-background"></div>
             </motion.div>
           )}
         </AnimatePresence>
