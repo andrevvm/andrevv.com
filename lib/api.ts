@@ -6,11 +6,17 @@ const PROJECT_INDEX_FIELDS = `
       title
     }
   }
-  videosCollection {
+  videosCollection(limit:1) {
     items {
       taskData
+      subtitles {
+        url
+      }
     }
-  } 
+  }
+  credits {
+    json
+  }
   typeCollection {
     items {
       title
@@ -40,7 +46,7 @@ async function fetchGraphQL(query: string, preview = false): Promise<any> {
       },
       body: JSON.stringify({ query }),
       next: { tags: ['projects'] },
-    },
+    }
   ).then((response) => response.json())
 }
 
@@ -54,7 +60,7 @@ function extractProjectEntries(fetchResponse: any): any[] {
 
 export async function getProjectBySlug(
   slug: string | null,
-  isDraftMode: boolean,
+  isDraftMode: boolean
 ): Promise<any> {
   const entry = await fetchGraphQL(
     `query {
@@ -67,7 +73,7 @@ export async function getProjectBySlug(
         }
       }
     }`,
-    isDraftMode,
+    isDraftMode
   )
   return extractProject(entry)
 }
@@ -83,7 +89,7 @@ export async function getAllProjects(isDraftMode: boolean): Promise<any[]> {
         }
       }
     }`,
-    isDraftMode,
+    isDraftMode
   )
   return extractProjectEntries(entries)
 }

@@ -20,6 +20,18 @@ export default async function RootLayout({
   const allProjects = await getAllProjects(false)
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Spectral:ital@0;1&display=swap"
+          as="style"
+        />
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="de136c0c-9bf9-4353-8ef0-930760175cd0"
+        ></script>
+      </head>
       <body>
         <LayoutTop></LayoutTop>
         <FadeChildren>{children}</FadeChildren>

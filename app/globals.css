@@ -2,8 +2,11 @@
 
 @import 'tailwindcss';
 @font-face {
-  font-family: 'Orator';
-  src: url('/oratorstd-webfont.woff') format('woff');
+  font-family: 'Marfa Mono';
+  src:
+    url('/ABCMarfaMono-Regular-Trial.woff2') format('woff2'),
+    url('/ABCMarfaMono-Regular-Trial.woff') format('woff'),
+    url('/ABCMarfaMono-Regular-Trial.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -11,40 +14,71 @@
 
 :root {
   --light: #f1f1f1;
-  --dark: #131313;
-  --dark-transparent: #131313cc;
-  --accent: #ff7ad5;
+  --dark: #0c0c0c;
+  --dark-transparent: #0c0c0c66;
+  --light-transparent: #f1f1f166;
+  --accent: #fbc0ff;
+  --accent-transparent: #fbc0ffcc;
+
+  --bg: var(--dark);
+  --fg: var(--light);
+  --overlay: var(--dark-transparent);
+  --shadow-color: var(--dark);
 }
 
 @theme inline {
-  --color-background: var(--dark);
-  --color-foreground: var(--light);
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
   --color-accent: var(--accent);
-  --color-overlay: var(--dark-transparent);
+  --color-accent-trans: var(--accent-transparent);
+  --color-overlay: var(--overlay);
+  --color-accent-overlay: var(--light-transparent);
+  --color-light: var(--light);
 
-  --font-mono: 'Orator', monospace;
+  --spacing-mono-gap: 0.3em;
+  --spacing-mono-gap-lg: 0.4em;
+
+  --font-mono: 'Marfa Mono', monospace;
   --font-serif: 'Spectral', serif;
 
-  --text-p: 15px;
+  --text-base: 10px;
+  --text-p: 16px;
+  --text-md: 1.3rem;
+  --text-sm: 1rem;
+  --text-m-md: 1.1rem;
+  --text-lg: 2rem;
+  --text-auto: inherit;
+
+  --shadow-lg: 0 0 40px var(--shadow-color), 0 0 40px var(--shadow-color);
+  --animate-spin: 1.5s spin linear infinite;
+  --animate-loading: 1s loading cubic-bezier(0.25, 0.5, 0.5, 0.25) infinite;
+
+  @keyframes loading {
+    0% {
+      background-size: 100% 200%;
+      background-position: 0% 0%;
+    }
+
+    100% {
+      background-size: 100% 200%;
+      background-position: 0% 200%;
+    }
+  }
 }
 
 html {
-  @apply snap-y snap-mandatory;
+  @apply snap-y snap-mandatory text-base;
 }
+
 html,
 body {
-  /* hide scrollbar */
-  /* scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  } */
+  @apply no-scrollbar;
 }
 
 body {
-  @apply font-mono bg-background text-foreground;
-  text-transform: lowercase;
-  letter-spacing: 0.05em;
+  @apply text-md font-mono bg-background text-foreground;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
 }
 
 p {
@@ -54,6 +88,13 @@ p {
 p + p {
   @apply mt-4;
 }
+.credits p {
+  @apply font-mono uppercase leading-none m-0 inline text-auto bg-background rounded-sm py-mono-gap px-3;
+}
+
+.caption {
+  @apply text-lg;
+}
 
 a:hover,
 .link:hover {
@@ -62,4 +103,16 @@ a:hover,
 
 a.group:hover {
   @apply text-inherit;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility text-trim {
+  text-box-trim: trim-both;
 }

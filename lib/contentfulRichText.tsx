@@ -31,7 +31,7 @@ interface RichTextDocument {
  * @returns React elements
  */
 export function renderContentfulRichText(
-  richText: RichTextDocument | null | undefined,
+  richText: RichTextDocument | null | undefined
 ): React.ReactElement[] {
   if (!richText?.content || !Array.isArray(richText.content)) {
     return []
@@ -42,7 +42,7 @@ export function renderContentfulRichText(
 
 function renderNode(
   node: RichTextNode,
-  key: number | string,
+  key: number | string
 ): React.ReactElement {
   const { nodeType, content, marks, value, data } = node
 
@@ -70,7 +70,7 @@ function renderNode(
             break
           case 'code':
             textElement = (
-              <code key={markKey} className="font-mono text-sm">
+              <code key={markKey} className="font-mono">
                 {textElement}
               </code>
             )
@@ -96,7 +96,7 @@ function renderNode(
         className="underline hover:no-underline"
       >
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-link-${childIndex}`),
+          renderNode(childNode, `${key}-link-${childIndex}`)
         )}
       </a>
     )
@@ -105,9 +105,9 @@ function renderNode(
   // Handle paragraph nodes
   if (nodeType === 'paragraph' && content) {
     return (
-      <p key={key} className="leading-[1.2] normal-case">
+      <p key={key} className="normal-case">
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-p-${childIndex}`),
+          renderNode(childNode, `${key}-p-${childIndex}`)
         )}
       </p>
     )
@@ -133,7 +133,7 @@ function renderNode(
     return (
       <HeadingTag key={key} className="leading-[1.2] normal-case">
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-${nodeType}-${childIndex}`),
+          renderNode(childNode, `${key}-${nodeType}-${childIndex}`)
         )}
       </HeadingTag>
     )
@@ -144,7 +144,7 @@ function renderNode(
     return (
       <ul key={key} className="list-disc list-inside">
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-ul-${childIndex}`),
+          renderNode(childNode, `${key}-ul-${childIndex}`)
         )}
       </ul>
     )
@@ -155,7 +155,7 @@ function renderNode(
     return (
       <ol key={key} className="list-decimal list-inside">
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-ol-${childIndex}`),
+          renderNode(childNode, `${key}-ol-${childIndex}`)
         )}
       </ol>
     )
@@ -166,7 +166,7 @@ function renderNode(
     return (
       <li key={key}>
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-li-${childIndex}`),
+          renderNode(childNode, `${key}-li-${childIndex}`)
         )}
       </li>
     )
@@ -177,7 +177,7 @@ function renderNode(
     return (
       <blockquote key={key} className="border-l-4 pl-4 italic">
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-bq-${childIndex}`),
+          renderNode(childNode, `${key}-bq-${childIndex}`)
         )}
       </blockquote>
     )
@@ -193,7 +193,7 @@ function renderNode(
     return (
       <React.Fragment key={key}>
         {content.map((childNode, childIndex) =>
-          renderNode(childNode, `${key}-fallback-${childIndex}`),
+          renderNode(childNode, `${key}-fallback-${childIndex}`)
         )}
       </React.Fragment>
     )

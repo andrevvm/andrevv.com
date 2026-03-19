@@ -1,0 +1,175 @@
+'use client'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion, stagger } from 'framer-motion'
+import { useProjectsStore } from '@/stores/projects'
+import { useParams } from 'next/navigation'
+import { useAsciiScramble } from '@/lib/hooks/useAsciiScramble'
+import gsap from 'gsap'
+import ScrollToPlugin from 'gsap/ScrollToPlugin'
+gsap.registerPlugin(ScrollToPlugin)
+
+export default function CaptionsPlayer() {
+  const { video } = useProjectsStore((state) => state)
+  const { slug } = useParams()
+
+  const [track, setTrack] = useState('')
+  const [progress, setProgress] = useState(0)
+  const [currentCueIndex, setCurrentCueIndex] = useState(-1)
+  const seekingRef = useRef(false)
+
+  const cc = useAsciiScramble(track)
+
+  const cuesArray = useMemo(() => {
+    const arr = []
+    const length = video?.textTracks[0]?.cues?.length || 0
+    for (let i = 0; i < length; i++) {
+      arr.push(video?.textTracks?.[0]?.cues?.[i])
+    }
+    return arr
+  }, [video])
+
+  const handleTimeUpdate = useCallback(() => {
+    if (video) setProgress(video.currentTime / video.duration)
+    const selectedIndex = cuesArray.findIndex((cue) => {
+      if (cue && video) {
+        return (
+          video?.currentTime >= cue.startTime &&
+          video.currentTime <= cue?.endTime
+        )
+      } else {
+        return -1
+      }
+    })
+    setCurrentCueIndex(selectedIndex)
+  }, [cuesArray, setCurrentCueIndex, video])
+
+  useEffect(() => {
+    if (currentCueIndex === -1 || !cuesArray[currentCueIndex]) return
+
+    setTrack((cuesArray[currentCueIndex] as VTTCue)?.text || '')
+  }, [cuesArray, currentCueIndex])
+
+  useEffect(() => {
+    if (!video) return
+    const tracks = video.textTracks[0]
+    if (tracks) {
+      // eslint-disable-next-line react-hooks/immutability -- DOM API, not state mutation
+      tracks.mode = 'hidden'
+    }
+    const onSeeked = () => {
+      seekingRef.current = false
+    }
+    video.addEventListener('timeupdate', handleTimeUpdate)
+    video.addEventListener('seeked', onSeeked)
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate)
+      video.removeEventListener('seeked', onSeeked)
+    }
+  }, [video, handleTimeUpdate])
+
+  const seekTo = useCallback(
+    (index: number) => {
+      if (!video || !cuesArray[index]) return false
+      // eslint-disable-next-line react-hooks/immutability -- DOM API, not state mutation
+      video.currentTime = (cuesArray[index] as VTTCue).startTime
+      return true
+    },
+    [cuesArray, video]
+  )
+
+  const nextCue = useCallback(() => {
+    if (currentCueIndex < 0) return
+
+    if (!seekTo(currentCueIndex + 1)) {
+      window.document.documentElement.style.scrollSnapType = 'none'
+      gsap.to(window, {
+        scrollTo: window.scrollY + window.innerHeight,
+        overwrite: true,
+        duration: 1,
+        ease: 'power2.out',
+
+        onComplete: () => {
+          setTimeout(() => {
+            window.document.documentElement.style.scrollSnapType = ''
+          }, 200)
+        },
+      })
+    }
+  }, [currentCueIndex, seekTo])
+
+  const previousCue = useCallback(() => {
+    if (currentCueIndex <= 0) {
+      seekTo(0)
+      return
+    }
+    seekTo(currentCueIndex - 1)
+  }, [currentCueIndex, seekTo])
+
+  return (
+    <AnimatePresence initial={true} mode="wait">
+      {slug && track !== '' && cc.length > 0 && cuesArray.length && (
+        <motion.div
+          key={`cc`}
+          initial={{ height: 0 }}
+          animate={{
+            height: 'auto',
+          }}
+          exit={{ height: 0 }}
+          className="overflow-hidden flex flex-col origin-bottom"
+        >
+          <div className="flex gap-x-3 items-stretch pointer-events-auto select-none max-md:px-10">
+            <div
+              key="player"
+              className="flex relative overflow-hidden justify-center text-center text-light py-3 pb-8 md:w-220 cursor-default"
+            >
+              <span className="inline-flex bg-background rounded-sm md:px-3 leading-normal max-md:pb-20">
+                {cc}
+              </span>
+
+              <motion.div
+                animate={{
+                  width: `${progress * 100}%`,
+                }}
+                transition={{ duration: 0.25, ease: 'linear' }}
+                className="absolute bottom-0 left-0 h-1.5 bg-light rounded-none pr-4 box-content"
+              ></motion.div>
+              <AnimatePresence>
+                {cuesArray.map((cue, i) => {
+                  return (
+                    <motion.div
+                      key={`cue-${video?.src}-${i}`}
+                      className="w-3 h-3 flex justify-center items-center hover:bg-accent transition-[height] duration-150 ease-out absolute bottom-0 bg-light mix-blend-difference origin-bottom cursor-pointer"
+                      initial={{
+                        scaleY: 0,
+                        left: video?.duration
+                          ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
+                          : 0,
+                      }}
+                      animate={{
+                        scaleY: 1,
+                        left: video?.duration
+                          ? `${((cue?.startTime || 0) / video?.duration) * 100}%`
+                          : 0,
+                      }}
+                      exit={{
+                        scaleY: 0,
+                      }}
+                      transition={{
+                        delay: i * 0.1,
+                        duration: 0.5,
+                        ease: 'anticipate',
+                      }}
+                      onClick={() => seekTo(i)}
+                    >
+                      <span className="w-10 h-10 flex-none"></span>
+                    </motion.div>
+                  )
+                })}
+              </AnimatePresence>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}

@@ -1,19 +1,17 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { type Project, useProjectsStore } from '@/stores/projects'
 import { useScrollState } from '@/stores/scroll'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getVideoAndThumbnail } from '@/lib/videoHelper'
-import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import gsap from 'gsap'
-import { useGSAP } from '@gsap/react'
-import ScrollToPlugin from 'gsap/ScrollToPlugin'
-import { useMediaQuery } from 'usehooks-ts'
 
-gsap.registerPlugin(useGSAP)
-gsap.registerPlugin(ScrollToPlugin)
+import { useMediaQuery } from 'usehooks-ts'
+import Renderer from './Renderer'
+import ScrollIndicator from './ScrollIndicator'
+import { scrollTo } from '../utils'
 
 function Scroller({ projects }: { projects: Project[] }) {
   const divider = 1
@@ -83,7 +81,7 @@ function Scroller({ projects }: { projects: Project[] }) {
     useProjectsStore.setState({ selectedIndex: scrollIndex })
     if (!hasInteracted) return
     if (slug) {
-      router.replace(isMobile ? `/` : `/${projects[scrollIndex].slug}`)
+      router.replace(`/${projects[scrollIndex].slug}`)
     }
   }, [scrollIndex, router, hasInteracted])
 
@@ -99,29 +97,25 @@ function Scroller({ projects }: { projects: Project[] }) {
   return (
     <div className="flex flex-col gap-0 h-screen">
       {projects.map((project, idx: number) => {
-        const isActive = idx === scrollIndex
-
         return (
           <motion.div
             key={project.slug}
             id={`scroller-${idx}`}
-            className="relative w-screen pointer-events-none flex-none flex flex-col items-end justify-end p-4 snap-start leading-none gap-0.5"
+            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden max-md:pb-20"
             style={{
               height: `${100 / divider}%`,
             }}
-            animate={{ opacity: isActive ? 1 : 0.1 }}
             transition={{ duration: 0.5, ease: 'anticipate' }}
           >
-            <h1 className="max-md:hidden m-0 pointer-events-auto">
-              <Link href={project.slug}>{project.title}</Link>
-            </h1>
-            <h2 className="max-md:hidden m-0 pointer-events-auto">
-              <Link href={project.slug}>
-                {project.roleCollection.items
-                  .map((role) => role.title)
-                  .join(', ')}
-              </Link>
-            </h2>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{
+                scale: slug ? (isMobile ? 0.95 : 0.75) : isMobile ? 0.66 : 0.33,
+              }}
+              className="h-auto w-full md:w-5/6 flex justify-center items-center"
+            >
+              <Video project={project} idx={idx} />
+            </motion.div>
           </motion.div>
         )
       })}
@@ -153,20 +147,8 @@ const ProjectThumbnail = ({
 
   const handleThumbClick = useCallback(
     (e: React.MouseEvent) => {
-      window.document.documentElement.style.scrollSnapType = 'none'
-
       e.preventDefault()
-      gsap.to(window, {
-        scrollTo: `#scroller-${index}`,
-        overwrite: true,
-        duration: 1,
-        ease: 'power2.out',
-        onComplete: () => {
-          setTimeout(() => {
-            window.document.documentElement.style.scrollSnapType = ''
-          }, 100)
-        },
-      })
+      scrollTo(index)
     },
     [slug, router, index]
   )
@@ -230,46 +212,92 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
   const videoAndThumbnail = getVideoAndThumbnail(
     project.videosCollection.items[0]?.taskData || null
   )
+
   useEffect(() => {
     if (selectedIndex === idx) {
-      videoRef.current?.play().catch((error) => {
-        console.warn('Error playing video:', error)
-      })
+      videoRef.current
+        ?.play()
+        .catch((error) => {
+          console.warn('Error playing video:', error)
+        })
+        .then(() => {
+          useProjectsStore.setState({ video: videoRef.current })
+        })
     } else {
-      videoRef.current?.pause()
+      if (!videoRef.current?.paused) {
+        videoRef.current?.pause()
+      }
     }
   }, [selectedIndex, idx])
   const { slug } = useParams()
+  const [waiting, setWaiting] = useState(false)
+
+  const handleWait = () => {
+    setWaiting(true)
+  }
+  const handlePlay = () => {
+    setWaiting(false)
+  }
+
   return (
-    <Link href={`/${slug ? '/' : project.slug}`}>
-      <video
-        ref={videoRef}
+    <>
+      <Link
+        href={`/${slug ? '/' : project.slug}`}
+        className="pointer-events-auto w-full flex items-center justify-center rounded-sm relative"
         style={{
-          visibility: selectedIndex === idx ? 'visible' : 'hidden',
+          aspectRatio: `${videoAndThumbnail?.video?.width} /${videoAndThumbnail?.video?.height}`,
         }}
-        src={videoAndThumbnail?.video?.url1080 || videoAndThumbnail?.video?.url}
-        poster={
-          videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
-        }
-        className="absolute left-1/2 -translate-x-1/2 h-full w-auto object-cover rounded-sm"
-        muted
-        playsInline
-        loop
-      />
-    </Link>
+      >
+        <AnimatePresence initial={true}>
+          {waiting && (
+            <motion.div
+              key="loading-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ in: { delay: 0.25 }, duration: 0.25 }}
+              className="absolute z-10 inset-0 flex justify-center bg-[url(/halftone.png)] bg-repeat bg-size-[16px] items-center"
+            >
+              <div className="absolute inset-0 animate-loading bg-linear-0 from-background from-5% via-transparent to-95% to-background"></div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <video
+          ref={videoRef}
+          src={
+            videoAndThumbnail?.video?.url1080 || videoAndThumbnail?.video?.url
+          }
+          poster={
+            videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
+          }
+          crossOrigin="anonymous"
+          className="h-auto w-full m-auto object-contain bg-black object-center rounded-lg"
+          muted
+          playsInline
+          loop
+          onWaiting={handleWait}
+          onStalled={handleWait}
+          onPlaying={handlePlay}
+          onTimeUpdate={handlePlay}
+          data-duration={videoAndThumbnail?.video.duration}
+        >
+          {project?.videosCollection.items.map((vid) => (
+            <track
+              key={`subtitles-${vid.id}`}
+              default
+              kind="captions"
+              srcLang="en"
+              src={vid.subtitles?.url || `/vtt/${project.slug}.vtt`}
+            />
+          ))}
+        </video>
+      </Link>
+    </>
   )
 }
 
 export default function AllProjects({ projects }: { projects: Project[] }) {
-  const { per, perNext } = useScrollState((state) => state)
-  const { slug } = useParams()
-  const isMobile = useMediaQuery('(max-width: 768px)', {
-    defaultValue: false,
-    initializeWithValue: false,
-  })
-  const pathname = usePathname()
-  const router = useRouter()
-
   // Initialize store with projects on client side
   useEffect(() => {
     useProjectsStore.setState({ projectList: projects })
@@ -277,37 +305,9 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{
-          width: `${slug && !isMobile ? (11 / 14) * 100 : (8 / 14) * 100}%`,
-          filter:
-            (slug && isMobile) || pathname === '/info' ? 'blur(10px)' : 'none',
-          opacity: (slug && isMobile) || pathname === '/info' ? 0.8 : 1,
-        }}
-        transition={{
-          duration: 0.5,
-          ease: 'anticipate',
-          filter: { duration: 0.5, ease: 'easeInOut' },
-        }}
-        className="fixed left-3/14 lg:left-3/14 h-screen w-8/14 flex flex-col items-center"
-      >
-        <Thumbnails top={true} per={per} projects={projects} />
-        <motion.div
-          initial={{ height: '50%' }}
-          transition={{ duration: 0.5, ease: 'anticipate' }}
-          animate={{ height: slug ? '75%' : '50%' }}
-          className="max-md:basis-3/11 flex justify-center py-1 max-w-full"
-        >
-          <div className="aspect-16/8 h-full w-auto relative">
-            {projects.map((project, idx) => (
-              <Video key={project.slug} project={project} idx={idx} />
-            ))}
-          </div>
-        </motion.div>
-        <Thumbnails per={perNext} projects={projects} />
-      </motion.div>
       <Scroller projects={projects} />
+      <Renderer />
+      <ScrollIndicator />
     </>
   )
 }

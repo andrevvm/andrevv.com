@@ -6,6 +6,10 @@ export interface ProjectDescription {
   json: Record<string, unknown>
 }
 
+export interface ProjectCredits {
+  json: Record<string, unknown>
+}
+
 export interface MediaItem {
   url: string
   width: number
@@ -29,8 +33,14 @@ export interface TypeCollection {
   items: TypeItem[]
 }
 
+export interface SubtitlesItem {
+  url: string
+}
+
 export interface VideoItem {
+  id: string
   taskData: TaskData
+  subtitles: SubtitlesItem
 }
 
 export interface VideosCollection {
@@ -41,6 +51,7 @@ export interface Project {
   title: string
   slug: string
   description: ProjectDescription
+  credits: ProjectCredits
   roleCollection: RoleCollection
   typeCollection: TypeCollection
   videosCollection: VideosCollection
@@ -51,9 +62,11 @@ export interface Project {
 export type ProjectsState = {
   selectedIndex: number
   projectList: Project[]
+  video: HTMLVideoElement | null
 }
 
 export const useProjectsStore = create<ProjectsState>((set) => ({
   selectedIndex: 0,
   projectList: [],
+  video: null,
 }))
