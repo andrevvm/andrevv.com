@@ -249,7 +249,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
         }}
       >
         <AnimatePresence initial={true}>
-          {true && (
+          {waiting && (
             <motion.div
               key="loading-overlay"
               initial={{ opacity: 0 }}
