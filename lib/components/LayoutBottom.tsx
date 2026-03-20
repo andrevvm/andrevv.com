@@ -44,11 +44,12 @@ function TitleDisplay({ project }: { project: Project }) {
 }
 
 export default function LayoutBottom({ projects }: { projects: Project[] }) {
-  const { selectedIndex } = useProjectsStore((state) => state)
+  const { lowPower, selectedIndex } = useProjectsStore((state) => state)
   const { slug } = useParams()
   const pathname = usePathname()
 
   const [showCredits, setShowCredits] = useState(false)
+  const showCreditsLabel = useAsciiScramble(showCredits ? 'Less' : 'More')
 
   const project = projects[selectedIndex]
   const types = useMemo(
@@ -67,7 +68,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
     >
       <div className="flex-1 flex flex-col items-center justify-end gap-y-2">
         <AnimatePresence initial={true} mode="wait">
-          {!slug && (
+          {(!slug || lowPower) && (
             <motion.div
               key={`type-text`}
               initial={{ height: 0 }}
@@ -108,20 +109,22 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         <CaptionsPlayer />
       </div>
       <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: slug ? 1 : 0 }}
-          className="absolute bottom-0 md:right-0 p-5 md:p-9.75 max-md:px-10 max-md:pb-14 max-md:right-1/2 max-md:translate-x-1/2"
-        >
-          <button
-            className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent max-md:text-sm"
-            onClick={() => {
-              setShowCredits(!showCredits)
-            }}
+        {!lowPower && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: slug ? 1 : 0 }}
+            className="absolute bottom-0 md:right-0 p-5 md:p-9.75 max-md:px-10 max-md:pb-14 max-md:right-1/2 max-md:translate-x-1/2"
           >
-            {useAsciiScramble(showCredits ? 'Less' : 'More')}
-          </button>
-        </motion.div>
+            <button
+              className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent max-md:text-sm"
+              onClick={() => {
+                setShowCredits(!showCredits)
+              }}
+            >
+              {showCreditsLabel}
+            </button>
+          </motion.div>
+        )}
       </AnimatePresence>
     </motion.div>
   )
