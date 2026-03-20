@@ -219,12 +219,16 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
   const videoAndThumbnail = getVideoAndThumbnail(
     project.videosCollection.items[0]?.taskData || null
   )
+  const { lowPower } = useProjectsStore((state) => state)
 
   useEffect(() => {
-    if (selectedIndex === idx) {
+    if (selectedIndex === idx && lowPower !== true) {
       videoRef.current
         ?.play()
         .catch((error) => {
+          if (error.toString().includes('NotAllowedError')) {
+            useProjectsStore.setState({ lowPower: true })
+          }
           console.warn('Error playing video:', error)
         })
         .then(() => {
@@ -235,7 +239,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
         videoRef.current?.pause()
       }
     }
-  }, [selectedIndex, idx])
+  }, [selectedIndex, idx, lowPower])
   const { slug } = useParams()
   const [waiting, setWaiting] = useState(false)
 
@@ -256,7 +260,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
         }}
       >
         <AnimatePresence initial={true}>
-          {waiting && (
+          {(waiting || lowPower) && (
             <motion.div
               key="loading-overlay"
               initial={{ opacity: 0 }}
@@ -305,6 +309,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
 }
 
 export default function AllProjects({ projects }: { projects: Project[] }) {
+  const { lowPower } = useProjectsStore((state) => state)
   // Initialize store with projects on client side
   useEffect(() => {
     useProjectsStore.setState({ projectList: projects })
@@ -312,6 +317,17 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
 
   return (
     <>
+      {lowPower && (
+        <div className="flex fixed z-20 top-0 w-screen h-svh items-center justify-center ">
+          <button
+            className="uppercase px-3 py-1 border-px text-center bg-background border-accent-trans cursor-pointer hover:text-accent"
+            onClick={() => useProjectsStore.setState({ lowPower: false })}
+          >
+            ▶ Play
+          </button>
+        </div>
+      )}
+
       <Scroller projects={projects} />
       <Renderer />
       <ScrollIndicator />
