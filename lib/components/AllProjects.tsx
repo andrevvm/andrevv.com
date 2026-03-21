@@ -112,7 +112,7 @@ function Scroller({ projects }: { projects: Project[] }) {
                 opacity: 0,
               }}
               animate={{
-                scale: slug ? (isMobile ? 0.95 : 0.75) : isMobile ? 0.66 : 0.33,
+                scale: slug ? (isMobile ? 3 : 0.75) : isMobile ? 0.66 : 0.33,
                 opacity: 1,
                 transition: {
                   duration: 0.75,
