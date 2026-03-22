@@ -315,9 +315,9 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
   return (
     <>
       {lowPower && (
-        <div className="flex fixed z-20 top-0 w-screen h-svh items-center justify-center ">
+        <div className="flex fixed z-20 top-0 w-screen h-svh items-center justify-center">
           <button
-            className="uppercase px-3 py-1 border-px text-center bg-background border-accent-trans cursor-pointer hover:text-accent"
+            className="uppercase px-3 py-3 relative max-md:top-7 rounded-lg flex border-px text-center bg-background border-accent-trans cursor-pointer hover:text-accent leading-none"
             onClick={() => useProjectsStore.setState({ lowPower: false })}
           >
             ▶ Play
