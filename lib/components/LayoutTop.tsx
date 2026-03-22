@@ -18,7 +18,7 @@ export default function LayoutTop() {
     <div className="fixed top-0 left-0 z-35 py-6 px-6 md:py-12 md:px-9.75 leading-none flex justify-between w-full pointer-events-none">
       <Link
         href="/"
-        className="normal-case pointer-events-auto py-0.5 px-3 bg-background rounded-sm"
+        className="normal-case pointer-events-auto py-1 px-3 bg-background rounded-lg"
         onClick={() => {
           if (pathname === '/') {
             window.document.documentElement.style.scrollSnapType = 'none'
@@ -39,7 +39,7 @@ export default function LayoutTop() {
       </Link>
       <Link
         href={pathname === '/info' ? '/' : '/info'}
-        className="pointer-events-auto py-0.5 px-3 bg-background"
+        className="pointer-events-auto py-1 px-3 bg-background rounded-lg"
       >
         {asciiButton}
       </Link>

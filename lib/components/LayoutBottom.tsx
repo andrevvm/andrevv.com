@@ -29,13 +29,13 @@ function TitleDisplay({ project }: { project: Project }) {
       <div className="flex justify-center items-end" key="title-display">
         <Link
           href={`/${project.slug}`}
-          className="pointer-events-auto bg-background rounded-sm py-mono-gap px-3"
+          className="pointer-events-auto bg-background rounded-lg py-mono-gap px-3"
         >
           {title}
         </Link>
       </div>
       <div className="flex justify-center text-center">
-        <div className="pointer-events-auto bg-background rounded-sm py-mono-gap px-3">
+        <div className="pointer-events-auto bg-background rounded-lg py-mono-gap px-3">
           {rolesDisplay}
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
             >
               <TitleDisplay project={project} />
               <div className="flex flex-col justify-center items-center text-center gap-y-4">
-                <div className="inline-flex pointer-events-auto bg-background rounded-sm px-3  py-mono-gap">
+                <div className="inline-flex pointer-events-auto bg-background rounded-lg px-3  py-mono-gap">
                   {typesDisplay}
                 </div>
                 <div className="credits flex flex-col">
@@ -116,7 +116,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
             className="absolute bottom-0 md:right-0 p-5 md:p-9.75 max-md:px-10 max-md:pb-14 max-md:right-1/2 max-md:translate-x-1/2"
           >
             <button
-              className="pointer-events-auto bg-background rounded-sm py-1.5 md:px-3 uppercase cursor-pointer hover:text-accent max-md:text-sm"
+              className="pointer-events-auto bg-background rounded-lg py-1.5 px-3 uppercase cursor-pointer hover:text-accent max-md:text-sm"
               onClick={() => {
                 setShowCredits(!showCredits)
               }}

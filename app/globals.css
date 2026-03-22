@@ -89,7 +89,7 @@ p + p {
   @apply mt-4;
 }
 .credits p {
-  @apply font-mono uppercase leading-none m-0 inline text-auto bg-background rounded-sm py-mono-gap px-3;
+  @apply font-mono uppercase leading-none m-0 inline text-auto bg-background rounded-lg py-mono-gap px-3;
 }
 
 .caption {

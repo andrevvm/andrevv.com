@@ -117,22 +117,23 @@ export default function CaptionsPlayer() {
           exit={{ height: 0 }}
           className="overflow-hidden flex flex-col origin-bottom"
         >
-          <div className="flex gap-x-3 items-stretch pointer-events-auto select-none max-md:px-10">
+          <div className="flex gap-x-3 items-stretch pointer-events-auto select-none">
             <div
               key="player"
               className="flex relative overflow-hidden justify-center text-center text-light py-3 pb-8 md:w-220 cursor-default"
             >
-              <span className="inline-flex bg-background rounded-sm md:px-3 leading-normal max-md:pb-20">
+              <span className="inline-flex bg-background rounded-lg md:px-3 max-md:mx-6 leading-normal max-md:mb-20">
                 {cc}
               </span>
-
-              <motion.div
-                animate={{
-                  width: `${progress * 100}%`,
-                }}
-                transition={{ duration: 0.25, ease: 'linear' }}
-                className="absolute bottom-0 left-0 h-1.5 bg-light rounded-none pr-4 box-content"
-              ></motion.div>
+              <div className="absolute bottom-0 left-0 h-3 bg-background w-full">
+                <motion.div
+                  animate={{
+                    width: `${progress * 100}%`,
+                  }}
+                  transition={{ duration: 0.25, ease: 'linear' }}
+                  className="absolute bottom-0 left-0 h-1.5 bg-light rounded-none pr-4 box-content"
+                ></motion.div>
+              </div>
               <AnimatePresence>
                 {cuesArray.map((cue, i) => {
                   return (
