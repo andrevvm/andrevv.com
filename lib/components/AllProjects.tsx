@@ -101,7 +101,7 @@ function Scroller({ projects }: { projects: Project[] }) {
           <div
             key={project.slug}
             id={`scroller-${idx}`}
-            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden max-md:pb-20"
+            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden"
             style={{
               height: `${100 / divider}%`,
             }}
@@ -112,14 +112,14 @@ function Scroller({ projects }: { projects: Project[] }) {
                 opacity: 0,
               }}
               animate={{
-                scale: slug ? (isMobile ? 0.95 : 0.75) : isMobile ? 0.66 : 0.33,
+                scale: slug ? (isMobile ? 1 : 0.75) : isMobile ? 0.25 : 0.33,
                 opacity: 1,
                 transition: {
                   duration: 0.75,
                   ease: 'anticipate',
                 },
               }}
-              className="h-svh w-full md:w-5/6 flex justify-center items-center"
+              className="h-screen w-auto aspect-video md:w-5/6 flex justify-center items-center"
             >
               <Video project={project} idx={idx} />
             </motion.div>
@@ -169,7 +169,7 @@ const ProjectThumbnail = ({
     >
       {project.videosCollection.items.map((video: any) => (
         <img
-          className="rounded-sm object-cover w-full h-full border-2 border-transparent hover:border-accent"
+          className="rounded-lg object-cover w-full h-full border-2 border-transparent hover:border-accent"
           key={videoAndThumbnail?.thumbnail?.url}
           src={videoAndThumbnail?.thumbnail?.url}
           draggable={false}
@@ -254,10 +254,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
     <>
       <Link
         href={`/${slug ? '/' : project.slug}`}
-        className="pointer-events-auto w-full flex items-center justify-center rounded-sm relative"
-        style={{
-          aspectRatio: `${videoAndThumbnail?.video?.width} /${videoAndThumbnail?.video?.height}`,
-        }}
+        className="pointer-events-auto w-full max-md:h-full flex items-center justify-center rounded-lg relative"
       >
         <AnimatePresence initial={true}>
           {(waiting || lowPower) && (
@@ -283,7 +280,7 @@ const Video = ({ project, idx }: { project: Project; idx: number }) => {
             videoAndThumbnail?.poster?.url || videoAndThumbnail?.thumbnail?.url
           }
           crossOrigin="anonymous"
-          className="h-auto w-full m-auto object-contain bg-black object-center rounded-lg"
+          className="max-md:h-full h-auto w-full m-auto object-cover bg-black object-center rounded-4xl transition-[height]"
           muted
           playsInline
           loop
@@ -318,9 +315,9 @@ export default function AllProjects({ projects }: { projects: Project[] }) {
   return (
     <>
       {lowPower && (
-        <div className="flex fixed z-20 top-0 w-screen h-svh items-center justify-center ">
+        <div className="flex fixed z-20 top-0 w-screen h-svh items-center justify-center">
           <button
-            className="uppercase px-3 py-1 border-px text-center bg-background border-accent-trans cursor-pointer hover:text-accent"
+            className="uppercase px-3 py-3 relative max-md:top-7 rounded-lg flex border-px text-center bg-background border-accent-trans cursor-pointer hover:text-accent leading-none"
             onClick={() => useProjectsStore.setState({ lowPower: false })}
           >
             ▶ Play
