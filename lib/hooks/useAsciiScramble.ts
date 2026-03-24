@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const ASCII_CHARS = '◦▫❍✫✧❀✿❁'
+const ASCII_CHARS = '◦✫✧❀✿❁'
 
 export function useAsciiScramble(text: string, duration = 600) {
   const [display, setDisplay] = useState(text)

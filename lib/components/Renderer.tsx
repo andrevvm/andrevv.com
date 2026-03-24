@@ -17,7 +17,7 @@ import {
 } from 'three'
 import { useProjectsStore } from '@/stores/projects'
 
-const characters = '  ◦▫✫✧❀✿❁ '
+const characters = '  ◦✫✧❀✿❁ '
 
 const meltVertexShader = `
   varying vec2 vUv;
