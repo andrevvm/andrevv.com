@@ -34,7 +34,7 @@ export async function generateMetadata({
     description: Array.isArray(project.description?.json?.content)
       ? project.description?.json?.content
           .flatMap((content: { content: Array<{ value: string }> }) =>
-            content.content.map((item: { value: string }) => item.value),
+            content.content.map((item: { value: string }) => item.value)
           )
           .join(' ')
       : null,
@@ -51,5 +51,5 @@ export default async function Project({
   if (!project) {
     redirect('/')
   }
-  return <ProjectPage key={project.slug} project={project} />
+  return <></>
 }
