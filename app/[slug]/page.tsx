@@ -1,5 +1,4 @@
 import { getAllProjects, getProjectBySlug } from '@/lib/api'
-import ProjectPage from '@/lib/pages/project'
 import type { Project } from '@/stores/projects'
 import { Metadata } from 'next'
 export const revalidate = 1000000
