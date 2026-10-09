@@ -112,7 +112,7 @@ function Scroller({ projects }: { projects: Project[] }) {
           <div
             key={project.slug}
             id={`scroller-${idx}`}
-            className="relative z-10 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden"
+            className="relative z-10 pb-12 md:pb-15 w-screen pointer-events-none flex-none flex flex-col items-center justify-center snap-start leading-none gap-0.5 overflow-hidden"
             style={{
               height: `${100 / divider}%`,
             }}
