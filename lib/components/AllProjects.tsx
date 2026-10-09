@@ -131,7 +131,7 @@ function Scroller({ projects }: { projects: Project[] }) {
                     ? isVertical
                       ? 0.5
                       : 0.25
-                    : 0.33,
+                    : isVertical ? 0.5 : 0.33,
                 opacity: 1,
                 transition: {
                   duration: 0.75,
