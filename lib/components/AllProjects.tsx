@@ -13,6 +13,15 @@ import Renderer from './Renderer'
 import ScrollIndicator from './ScrollIndicator'
 import { scrollTo } from '../utils'
 
+const getDimensions = (project: Project) => {
+  const { video, poster } = getVideoAndThumbnail(
+    project.videosCollection.items[0]?.taskData || null
+  ) ?? {}
+  const width = video?.width || poster?.width
+  const height = video?.height || poster?.height
+  return width && height ? { width, height } : { width: 16, height: 9 }
+}
+
 function Scroller({ projects }: { projects: Project[] }) {
   const divider = 1
   const [scrollY, setScrollY] = useState(0)
@@ -97,6 +106,8 @@ function Scroller({ projects }: { projects: Project[] }) {
   return (
     <div className="flex flex-col gap-0 h-screen">
       {projects.map((project, idx: number) => {
+        const { width, height } = getDimensions(project)
+        const isVertical = height > width
         return (
           <div
             key={project.slug}
@@ -112,14 +123,23 @@ function Scroller({ projects }: { projects: Project[] }) {
                 opacity: 0,
               }}
               animate={{
-                scale: slug ? (isMobile ? 1 : 0.75) : isMobile ? 0.25 : 0.33,
+                scale: slug
+                  ? isMobile
+                    ? 1
+                    : 0.75
+                  : isMobile
+                    ? isVertical
+                      ? 0.5
+                      : 0.25
+                    : 0.33,
                 opacity: 1,
                 transition: {
                   duration: 0.75,
                   ease: 'anticipate',
                 },
               }}
-              className="h-screen w-auto aspect-video md:w-5/6 flex justify-center items-center"
+              className="h-screen w-auto md:w-auto flex justify-center items-center"
+              style={{ aspectRatio: `${width} / ${height}` }}
             >
               <Video project={project} idx={idx} />
             </motion.div>
