@@ -1,28 +1,32 @@
-'use client'
-import { useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { renderContentfulRichText } from '@/lib/contentfulRichText'
+"use client";
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { renderContentfulRichText } from "@/lib/contentfulRichText";
 import {
   Project,
   RoleItem,
   TypeItem,
   useProjectsStore,
-} from '@/stores/projects'
-import Link from 'next/link'
-import { useParams, usePathname } from 'next/navigation'
-import { useAsciiScramble } from '@/lib/hooks/useAsciiScramble'
-import CaptionsPlayer from '@/lib/components/CaptionsPlayer'
+} from "@/stores/projects";
+import Link from "next/link";
+import { useParams, usePathname } from "next/navigation";
+import { useAsciiScramble } from "@/lib/hooks/useAsciiScramble";
+import CaptionsPlayer from "@/lib/components/CaptionsPlayer";
+
+function ScrambleText({ text }: { text: string }) {
+  return <>{useAsciiScramble(text)}</>;
+}
 
 function TitleDisplay({ project }: { project: Project }) {
-  const title = useAsciiScramble(project?.title ?? '')
+  const title = useAsciiScramble(project?.title ?? "");
   const roles = useMemo(
     () =>
       project?.roleCollection.items
         .map((role: RoleItem) => role.title)
-        .join(', ') ?? '',
-    [project]
-  )
-  const rolesDisplay = useAsciiScramble(roles)
+        .join(", ") ?? "",
+    [project],
+  );
+  const rolesDisplay = useAsciiScramble(roles);
 
   return (
     <>
@@ -40,30 +44,30 @@ function TitleDisplay({ project }: { project: Project }) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export default function LayoutBottom({ projects }: { projects: Project[] }) {
-  const { lowPower, selectedIndex } = useProjectsStore((state) => state)
-  const { slug } = useParams()
-  const pathname = usePathname()
+  const { lowPower, selectedIndex } = useProjectsStore((state) => state);
+  const { slug } = useParams();
+  const pathname = usePathname();
 
-  const [showCredits, setShowCredits] = useState(false)
-  const showCreditsLabel = useAsciiScramble(showCredits ? 'Less' : 'More')
+  const [showCredits, setShowCredits] = useState(false);
+  const showCreditsLabel = useAsciiScramble(showCredits ? "Less" : "More");
 
-  const project = projects[selectedIndex]
+  const project = projects[selectedIndex];
   const types = useMemo(
     () =>
       project?.typeCollection.items
         .map((type: TypeItem) => type.title)
-        .join(', ') ?? '',
-    [project]
-  )
-  const typesDisplay = useAsciiScramble(types)
+        .join(", ") ?? "",
+    [project],
+  );
+  const typesDisplay = useAsciiScramble(types);
 
   return (
     <motion.div
-      animate={{ opacity: pathname === '/info' ? 0 : 1 }}
+      animate={{ opacity: pathname === "/info" ? 0 : 1 }}
       className="fixed bottom-0 pointer-events-none left-0 w-full z-35 p-0 leading-none bg-none flex items-end justify-end gap-y-2"
     >
       <div className="flex-1 flex flex-col items-center justify-end gap-y-2">
@@ -72,8 +76,8 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
             <motion.div
               key={`type-text`}
               initial={{ height: 0 }}
-              animate={{ height: 'auto' }}
-              transition={{ ease: 'circOut' }}
+              animate={{ height: "auto" }}
+              transition={{ ease: "circOut" }}
               exit={{ height: 0 }}
               className="overflow-hidden flex-col gap-y-0"
             >
@@ -88,9 +92,9 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
             <motion.div
               key={`type-text-credit`}
               initial={{ height: 0 }}
-              animate={{ height: 'auto' }}
+              animate={{ height: "auto" }}
               exit={{ height: 0 }}
-              transition={{ ease: 'circOut' }}
+              transition={{ ease: "circOut" }}
               className="overflow-hidden flex-col gap-y-0 text-sm leading-relaxed"
             >
               <TitleDisplay project={project} />
@@ -98,8 +102,10 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
                 <div className="inline-flex pointer-events-auto bg-background rounded-lg px-3  py-mono-gap">
                   {typesDisplay}
                 </div>
-                <div className="credits flex flex-col">
-                  {renderContentfulRichText(project?.credits?.json)}
+                <div className="credits flex flex-col items-center text-pretty">
+                  {renderContentfulRichText(project?.credits?.json, (value) => (
+                    <ScrambleText text={value} />
+                  ))}
                 </div>
               </div>
             </motion.div>
@@ -118,7 +124,7 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
             <button
               className="pointer-events-auto bg-background rounded-lg py-1.5 px-3 uppercase cursor-pointer hover:text-accent max-md:text-sm"
               onClick={() => {
-                setShowCredits(!showCredits)
+                setShowCredits(!showCredits);
               }}
             >
               {showCreditsLabel}
@@ -127,5 +133,5 @@ export default function LayoutBottom({ projects }: { projects: Project[] }) {
         )}
       </AnimatePresence>
     </motion.div>
-  )
+  );
 }
