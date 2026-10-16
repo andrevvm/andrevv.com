@@ -208,6 +208,17 @@ const Video = () => {
     const write = frameCount.current % 2 === 0 ? targetA : targetB
     const read = frameCount.current % 2 === 0 ? targetB : targetA
 
+    // Scale video UVs to mimic object-fit: cover
+    const video = textureRef.current.image as HTMLVideoElement
+    if (video.videoWidth && video.videoHeight) {
+      const canvasAspect = size.width / size.height
+      const videoAspect = video.videoWidth / video.videoHeight
+      meltMaterialRef.current.uniforms.uVideoScale.value.set(
+        canvasAspect > videoAspect ? 1 : canvasAspect / videoAspect,
+        canvasAspect > videoAspect ? videoAspect / canvasAspect : 1
+      )
+    }
+
     meltMaterialRef.current.uniforms.uCurrentFrame.value = textureRef.current
     meltMaterialRef.current.uniforms.uPreviousFrame.value = read.texture
 
@@ -229,7 +240,7 @@ const Video = () => {
 
   return (
     <mesh position={[0, 0, 0]}>
-      <planeGeometry args={[size.width * 1.2, size.height]} />
+      <planeGeometry args={[size.width, size.height]} />
       <meshBasicMaterial color="white" ref={materialRef} toneMapped={false} />
     </mesh>
   )
@@ -344,7 +355,7 @@ const Renderer = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: slug ? 0 : 0.66 }}
       transition={{ duration: 0.5, ease: 'circInOut' }}
-      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-5 h-screen w-auto aspect-video"
+      className="fixed inset-0 z-5"
     >
       <Canvas dpr={dpr}>
         <ThreeScene />
