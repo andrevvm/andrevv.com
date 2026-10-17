@@ -22,7 +22,6 @@ export default function Info() {
             experiences that are both delightful and functional.
           </p>
           <p>This website was designed in browser with code.</p>
-          <p>Experimental spirit, pragmatic heart.</p>
           <p className="italic">
             <a
               href="mailto:hi@andrevv.com"
