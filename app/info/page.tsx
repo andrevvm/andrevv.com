@@ -14,7 +14,7 @@ export default function Info() {
       <div className="flex flex-col h-full justify-between pb-4">
         <article className="tracking-normal text-md">
           <p>
-            Creative developer based in San Diego with over 10 years of
+            Creative developer based in San Diego with 15 years of
             experience designing and building for the web.
           </p>
           <p>
